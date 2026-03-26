@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>User Detail — Admin Panel</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+</head>
+<body>
+<div class="admin-wrapper">
+
+    <!-- SIDEBAR -->
+    <div class="admin-sidebar">
+        <div class="admin-brand">
+            <span>💍</span>
+            <span>Admin Panel</span>
+        </div>
+        <nav class="admin-nav">
+            <a href="{% url 'admin_dashboard' %}" class="admin-nav-link">
+                📊 Dashboard
+            </a>
+            <a href="{% url 'admin_users' %}" class="admin-nav-link active">
+                👥 Users
+            </a>
+            <a href="{% url 'admin_subscriptions' %}" class="admin-nav-link">
+                💛 Subscriptions
+            </a>
+        </nav>
+        <div class="admin-sidebar-footer">
+            <div class="admin-user-info">
+                <div class="admin-avatar">
+                    {{ request.user.first_name|first|upper }}
+                </div>
+                <div>
+                    <div class="admin-user-name">
+                        {{ request.user.get_full_name }}
+                    </div>
+                    <div class="admin-user-role">Administrator</div>
+                </div>
+            </div>
+            <a href="{% url 'admin_logout' %}" class="btn-admin-logout">
+                Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="admin-main">
+        <div class="admin-topbar">
+            <h1>
+                <a href="{% url 'admin_users' %}" class="back-link">
+                    ← Users
+                </a>
+                User Detail
+            </h1>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="admin-two-col">
+
+            <!-- Left: Profile Info -->
+            <div>
+
+                <!-- User Card -->
+                <div class="admin-card" style="margin-bottom: 20px;">
+                    <div class="admin-card-header">
+                        <h3>👤 Profile Information</h3>
+                        <div style="display:flex; gap:10px;">
+
+                            <!-- Block / Unblock -->
+                            <form method="POST"
+                                  action="{% url 'admin_block_user' target_user.id %}">
+                                {% csrf_token %}
+                                {% if target_user.is_blocked %}
+                                    <button type="submit"
+                                            class="btn-unblock">
+                                        ✅ Unblock User
+                                    </button>
+                                {% else %}
+                                    <button type="submit"
+                                            class="btn-block"
+                                            onclick="return confirm('Block this user?')">
+                                        🚫 Block User
+                                    </button>
+                                {% endif %}
+                            </form>
+
+                            <!-- Delete -->
+                            <form method="POST"
+                                  action="{% url 'admin_delete_user' target_user.id %}">
+                                {% csrf_token %}
+                                <button type="submit"
+                                        class="btn-delete"
+                                        onclick="return confirm('Permanently delete this user? This cannot be undone!')">
+                                    🗑️ Delete
+                                </button>
+                            </form>
+
+                        </div>
+                    </div>
+
+                    <!-- Photo -->
+                    <div class="user-detail-photo">
+                        {% if profile.profile_photo %}
+                            <img src="{{ profile.profile_photo.url }}"
+                                 alt="{{ target_user.get_full_name }}"/>
+                        {% else %}
+                            <div class="user-detail-initial">
+                                {{ target_user.first_name|first|upper }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="user-detail-name">
+                        {{ target_user.get_full_name }}
+                        {% if profile.verified_badge %}✅{% endif %}
+                        {% if target_user.is_gold %}
+                            <span class="badge-gold">💛 Gold</span>
+                        {% endif %}
+                        {% if target_user.is_blocked %}
+                            <span class="badge-blocked">🚫 Blocked</span>
+                        {% endif %}
+                    </div>
+                    <div class="user-detail-email">{{ target_user.email }}</div>
+
+                    <!-- Info Rows -->
+                    <div class="user-detail-rows">
+                        <div class="detail-row">
+                            <span class="detail-label">Joined</span>
+                            <span>{{ target_user.date_joined|date:"d M Y" }}</span>
+                        </div>
+                        {% if profile.gender %}
+                        <div class="detail-row">
+                            <span class="detail-label">Gender</span>
+                            <span>{{ profile.get_gender_display }}</span>
+                        </div>
+                        {% endif %}
+                        {% if profile.date_of_birth %}
+                        <div class="detail-row">
+                            <span class="detail-label">Date of Birth</span>
+                            <span>{{ profile.date_of_birth|date:"d M Y" }}</span>
+                        </div>
+                        {% endif %}
+                        {% if profile.nationality %}
+                        <div class="detail-row">
+                            <span class="detail-label">Nationality</span>
+                            <span>{{ profile.nationality }}</span>
+                        </div>
+                        {% endif %}
+                        {% if profile.city and profile.country %}
+                        <div class="detail-row">
+                            <span class="detail-label">Location</span>
+                            <span>{{ profile.city }}, {{ profile.country }}</span>
+                        </div>
+                        {% endif %}
+                        {% if profile.profession %}
+                        <div class="detail-row">
+                            <span class="detail-label">Profession</span>
+                            <span>{{ profile.profession }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="detail-row">
+                            <span class="detail-label">Profile Complete</span>
+                            <span>{{ profile.completion_percentage }}%</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Interests Sent</span>
+                            <span>{{ interests_sent }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Interests Received</span>
+                            <span>{{ interests_received }}</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right: Subscriptions -->
+            <div>
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h3>💛 Subscription History</h3>
+                    </div>
+                    {% if subscriptions %}
+                        {% for sub in subscriptions %}
+                        <div class="sub-history-item">
+                            <div class="sub-history-left">
+                                <div class="sub-plan">
+                                    {{ sub.get_plan_display }}
+                                </div>
+                                <div class="sub-method">
+                                    {% if sub.payment_method == 'jazzcash' %}
+                                        🟠 JazzCash
+                                    {% else %}
+                                        🟢 Easypaisa
+                                    {% endif %}
+                                    · {{ sub.transaction_id }}
+                                </div>
+                                <div class="sub-date">
+                                    {{ sub.created_at|date:"d M Y" }}
+                                </div>
+                                {% if sub.end_date %}
+                                <div class="sub-date">
+                                    Expires: {{ sub.end_date|date:"d M Y" }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="sub-history-right">
+                                <div class="sub-amount">
+                                    Rs. {{ sub.amount }}
+                                </div>
+                                <div class="sub-status-badge {{ sub.status }}">
+                                    {% if sub.status == 'pending' %}⏳ Pending
+                                    {% elif sub.status == 'active' %}✅ Active
+                                    {% elif sub.status == 'expired' %}🕐 Expired
+                                    {% elif sub.status == 'rejected' %}❌ Rejected
+                                    {% endif %}
+                                </div>
+                                {% if sub.status == 'pending' %}
+                                <div style="display:flex; gap:6px; margin-top:8px;">
+                                    <form method="POST"
+                                          action="{% url 'admin_approve_subscription' sub.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit"
+                                                class="btn-approve">
+                                            ✅ Approve
+                                        </button>
+                                    </form>
+                                    <form method="POST"
+                                          action="{% url 'admin_reject_subscription' sub.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit"
+                                                class="btn-reject-sm">
+                                            ❌ Reject
+                                        </button>
+                                    </form>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="admin-empty">
+                            <p>No subscription history for this user.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>My Subscription — Nikkah Connect</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/subscription.css' %}">
+</head>
+<body>
+<div class="dashboard-wrapper">
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a class="navbar-brand" href="{% url 'dashboard' %}">
+            <span class="brand-icon">💍</span>
+            <span class="brand-name">Nikkah<em>Connect</em></span>
+        </a>
+        <div class="navbar-right">
+            <a href="{% url 'browse_profiles' %}" class="nav-action-link">
+                🔍 Browse
+            </a>
+            <a href="{% url 'my_interests' %}" class="nav-action-link">
+                💌 Interests
+            </a>
+            <a href="{% url 'notifications' %}" class="nav-action-link notif-nav-link">
+                🔔 Alerts
+                {% with unread=request.user.notifications.all %}
+                    {% if unread %}
+                        <span class="notif-badge">{{ unread|length }}</span>
+                    {% endif %}
+                {% endwith %}
+            </a>
+            <div class="navbar-user">
+                <div class="navbar-avatar">
+                    {{ request.user.first_name|first|upper }}
+                </div>
+                <span>{{ request.user.first_name }}</span>
+            </div>
+            <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="subscription-content">
+
+        <!-- Header -->
+        <div class="subscription-header">
+            <a href="{% url 'dashboard' %}" class="back-link">
+                ← Back to Dashboard
+            </a>
+            <h1>My Subscription</h1>
+            <p>View your current plan and payment history</p>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Current Status Card -->
+        {% if is_gold and active_sub %}
+        <div class="sub-status-card gold-active">
+            <div class="sub-status-icon">💛</div>
+            <div class="sub-status-info">
+                <h3>Gold Member — Active</h3>
+                <p>Plan: {{ active_sub.get_plan_display }}</p>
+                <p>Expires: {{ active_sub.end_date|date:"d M Y" }}</p>
+            </div>
+            <a href="{% url 'pricing' %}" class="btn-renew">
+                Renew →
+            </a>
+        </div>
+        {% else %}
+        <div class="sub-status-card free-active">
+            <div class="sub-status-icon">🆓</div>
+            <div class="sub-status-info">
+                <h3>Free Plan</h3>
+                <p>Upgrade to Gold to unlock all premium features</p>
+            </div>
+            <a href="{% url 'pricing' %}" class="btn-renew">
+                Upgrade →
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- Payment History -->
+        {% if subscriptions %}
+        <div class="payment-history">
+            <h3>Payment History</h3>
+            <div class="history-list">
+                {% for sub in subscriptions %}
+                <div class="history-item">
+                    <div class="history-left">
+                        <div class="history-plan">
+                            {{ sub.get_plan_display }}
+                        </div>
+                        <div class="history-method">
+                            {% if sub.payment_method == 'jazzcash' %}
+                                🟠 JazzCash
+                            {% else %}
+                                🟢 Easypaisa
+                            {% endif %}
+                            · TXN: {{ sub.transaction_id }}
+                        </div>
+                        <div class="history-date">
+                            {{ sub.created_at|date:"d M Y" }}
+                        </div>
+                    </div>
+                    <div class="history-right">
+                        <div class="history-amount">
+                            Rs. {{ sub.amount|floatformat:"0" }}
+                        </div>
+                        <div class="history-status {{ sub.status }}">
+                            {% if sub.status == 'pending' %}⏳ Pending
+                            {% elif sub.status == 'active' %}✅ Active
+                            {% elif sub.status == 'expired' %}🕐 Expired
+                            {% elif sub.status == 'rejected' %}❌ Rejected
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+</body>
+</html>

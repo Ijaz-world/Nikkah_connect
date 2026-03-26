@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Verify Profile — Nikkah Connect</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/verify.css' %}">
+</head>
+<body>
+<div class="dashboard-wrapper">
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a class="navbar-brand" href="{% url 'dashboard' %}">
+            <span class="brand-icon">💍</span>
+            <span class="brand-name">Nikkah<em>Connect</em></span>
+        </a>
+        <div class="navbar-right">
+       <a href="{% url 'notifications' %}" class="nav-action-link notif-nav-link">
+        🔔 Alerts
+        {% with unread=request.user.notifications.all %}
+            {% if unread %}
+                <span class="notif-badge">{{ unread|length }}</span>
+            {% endif %}
+        {% endwith %}
+    </a>
+            <div class="navbar-user">
+                <div class="navbar-avatar">
+                    {{ request.user.first_name|first|upper }}
+                </div>
+                <span>{{ request.user.first_name }}</span>
+            </div>
+            <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="verify-content">
+
+        <!-- Page Header -->
+        <div class="verify-page-header">
+            <a href="{% url 'dashboard' %}" class="back-link">← Back to Dashboard</a>
+            <h1>Profile Verification</h1>
+            <p>Complete both stages to get your Verified Badge</p>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Progress Stages -->
+        <div class="stages-bar">
+            <div class="stage-item {% if profile.phone_verified %}done{% else %}active{% endif %}">
+                <div class="stage-dot">
+                    {% if profile.phone_verified %}✓{% else %}1{% endif %}
+                </div>
+                <span>Confirm Phone</span>
+            </div>
+            <div class="stage-line"></div>
+            <div class="stage-item
+                {% if profile.verified_badge %}done
+                {% elif profile.phone_verified %}active
+                {% endif %}">
+                <div class="stage-dot">
+                    {% if profile.verified_badge %}✓{% else %}2{% endif %}
+                </div>
+                <span>Upload Selfie</span>
+            </div>
+        </div>
+
+        <!-- STAGE 1: Confirm Phone -->
+        <div class="verify-card {% if profile.phone_verified %}stage-done{% endif %}">
+            <div class="verify-card-header">
+                <div class="stage-num-badge
+                    {% if profile.phone_verified %}badge-done{% endif %}">
+                    {% if profile.phone_verified %}✓{% else %}1{% endif %}
+                </div>
+                <div>
+                    <h2>Confirm Phone Number</h2>
+                    <p>Confirm that the phone number on your account is correct</p>
+                </div>
+                {% if profile.phone_verified %}
+                    <div class="stage-check">✅ Confirmed</div>
+                {% endif %}
+            </div>
+
+            {% if not profile.phone_verified %}
+            <div class="verify-card-body">
+                <div class="phone-display">
+                    <span class="phone-icon">📱</span>
+                    <div>
+                        <div class="phone-label">Phone Number on File</div>
+                        <div class="phone-number">
+                            {% if request.user.phone_number %}
+                                {{ request.user.phone_number }}
+                            {% else %}
+                                <span style="color:var(--text-muted)">
+                                    No phone number added
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                {% if request.user.phone_number %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="confirm_phone"/>
+                    <button type="submit" class="btn-verify-action">
+                        ✅ Yes, This is My Number
+                    </button>
+                </form>
+                {% else %}
+                <div class="alert alert-warning">
+                    You have not added a phone number yet.
+                    Please edit your profile to add one first.
+                </div>
+                <a href="{% url 'profile_create_step' step=1 %}"
+                   class="btn-verify-action outline">
+                    Add Phone Number →
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- STAGE 2: Selfie Upload -->
+        <div class="verify-card
+            {% if not profile.phone_verified %}stage-locked{% endif %}
+            {% if profile.verified_badge %}stage-done{% endif %}">
+
+            <div class="verify-card-header">
+                <div class="stage-num-badge
+                    {% if profile.verified_badge %}badge-done{% endif %}
+                    {% if not profile.phone_verified %}badge-locked{% endif %}">
+                    {% if profile.verified_badge %}✓{% else %}2{% endif %}
+                </div>
+                <div>
+                    <h2>Upload Selfie Photo</h2>
+                    <p>Upload a clear photo of your face to confirm your identity</p>
+                </div>
+                {% if profile.verified_badge %}
+                    <div class="stage-check">✅ Verified</div>
+                {% endif %}
+            </div>
+
+            {% if profile.phone_verified and not profile.verified_badge %}
+            <div class="verify-card-body">
+
+                <!-- Tips -->
+                <div class="selfie-tips">
+                    <div class="tip-title">📸 Tips for a good selfie</div>
+                    <div class="tips-grid">
+                        <div class="tip-item">✅ Good lighting</div>
+                        <div class="tip-item">✅ Face clearly visible</div>
+                        <div class="tip-item">✅ No sunglasses</div>
+                        <div class="tip-item">✅ Plain background</div>
+                    </div>
+                </div>
+
+                <!-- Upload Form -->
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="upload_selfie"/>
+
+                    <div class="selfie-upload-area" id="selfieArea">
+                        <img src="" id="selfiePreview"
+                             class="selfie-preview" style="display:none;" alt="Selfie"/>
+                        <div class="selfie-placeholder" id="selfiePlaceholder">
+                            <span class="selfie-upload-icon">🤳</span>
+                            <p>Click to upload your selfie</p>
+                            <span class="upload-hint">JPG, PNG — max 5MB</span>
+                        </div>
+                        <input type="file" name="selfie_photo" id="selfieInput"
+                               accept="image/*" style="display:none;" required/>
+                    </div>
+
+                    <button type="submit" class="btn-verify-action" id="submitSelfieBtn">
+                        Submit Selfie & Get Verified 🎉
+                    </button>
+                </form>
+            </div>
+
+            {% elif not profile.phone_verified %}
+            <div class="verify-card-body locked-body">
+                <div class="locked-msg">
+                    🔒 Complete Stage 1 first to unlock this step
+                </div>
+            </div>
+            {% endif %}
+
+            {% if profile.verified_badge %}
+            <div class="verify-card-body">
+                <div class="verified-success-wrap">
+                    <div class="verified-big-icon">🎉</div>
+                    <h3>Profile Verified!</h3>
+                    <p>Your profile now has the Verified Badge.
+                    Other members can see that you are a real person.</p>
+                    {% if profile.selfie_photo %}
+                        <img src="{{ profile.selfie_photo.url }}"
+                             class="submitted-selfie" alt="Your selfie"/>
+                    {% endif %}
+                    <a href="{% url 'dashboard' %}" class="btn-verify-action">
+                        Go to Dashboard →
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+<script>
+// Selfie preview
+const selfieArea        = document.getElementById('selfieArea');
+const selfieInput       = document.getElementById('selfieInput');
+const selfiePreview     = document.getElementById('selfiePreview');
+const selfiePlaceholder = document.getElementById('selfiePlaceholder');
+
+if (selfieArea) {
+    selfieArea.addEventListener('click', () => selfieInput.click());
+    selfieInput.addEventListener('change', function () {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                selfiePreview.src = e.target.result;
+                selfiePreview.style.display = 'block';
+                selfiePlaceholder.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>My Interests — Nikkah Connect</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/browse.css' %}">
+</head>
+<body>
+<div class="dashboard-wrapper">
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a class="navbar-brand" href="{% url 'dashboard' %}">
+            <span class="brand-icon">💍</span>
+            <span class="brand-name">Nikkah<em>Connect</em></span>
+        </a>
+        <div class="navbar-right">
+       
+            <a href="{% url 'browse_profiles' %}" class="nav-action-link">
+                🔍 Browse
+            </a>
+            <a href="{% url 'my_interests' %}" class="nav-action-link active">
+                💌 Interests
+            </a>
+            <a href="{% url 'notifications' %}" class="nav-action-link notif-nav-link">
+        🔔 Alerts
+        {% with unread=request.user.notifications.all %}
+            {% if unread %}
+                <span class="notif-badge">{{ unread|length }}</span>
+            {% endif %}
+        {% endwith %}
+    </a>
+    <a href="{% url 'pricing' %}" class="nav-action-link">
+    💛 Gold
+</a>
+            <div class="navbar-user">
+                <div class="navbar-avatar">
+                    {{ request.user.first_name|first|upper }}
+                </div>
+                <span>{{ request.user.first_name }}</span>
+            </div>
+            <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="browse-content">
+
+        <!-- Page Header -->
+        <div class="browse-header">
+            <div>
+                <a href="{% url 'dashboard' %}" class="back-link">
+                    ← Back to Dashboard
+                </a>
+                <h1>My Interests & Matches</h1>
+                <p>Manage your sent and received interests</p>
+            </div>
+            <a href="{% url 'browse_profiles' %}" class="btn-view-interests">
+                🔍 Browse Profiles
+            </a>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Tabs -->
+        <div class="interests-tabs">
+            <a href="?tab=received"
+               class="tab-btn {% if active_tab == 'received' %}active{% endif %}">
+                📥 Received
+                {% if received %}
+                    <span class="tab-count">{{ received|length }}</span>
+                {% endif %}
+            </a>
+            <a href="?tab=sent"
+               class="tab-btn {% if active_tab == 'sent' %}active{% endif %}">
+                📤 Sent
+                {% if sent %}
+                    <span class="tab-count">{{ sent|length }}</span>
+                {% endif %}
+            </a>
+            <a href="?tab=matches"
+               class="tab-btn {% if active_tab == 'matches' %}active{% endif %}">
+                💞 Matches
+                {% if matches %}
+                    <span class="tab-count match-count">{{ matches|length }}</span>
+                {% endif %}
+            </a>
+        </div>
+
+        <!-- ── TAB: RECEIVED ── -->
+        {% if active_tab == 'received' %}
+        <div class="tab-content">
+            {% if received %}
+                <div class="interests-list">
+                    {% for interest in received %}
+                    <div class="interest-card
+                        {% if interest.status == 'accepted' %}accepted
+                        {% elif interest.status == 'rejected' %}rejected
+                        {% endif %}">
+
+                        <!-- Photo -->
+                        <div class="interest-photo">
+                            {% if interest.sender.profile.profile_photo %}
+                                <img src="{{ interest.sender.profile.profile_photo.url }}"
+                                     alt="{{ interest.sender.get_full_name }}"/>
+                            {% else %}
+                                <div class="interest-initial">
+                                    {{ interest.sender.first_name|first|upper }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Info -->
+                        <div class="interest-info">
+                            <div class="interest-name">
+                                {{ interest.sender.get_full_name }}
+                                {% if interest.sender.profile.verified_badge %}
+                                    ✅
+                                {% endif %}
+                            </div>
+                            <div class="interest-meta">
+                                {% if interest.sender.profile.profession %}
+                                    💼 {{ interest.sender.profile.profession }}
+                                {% endif %}
+                                {% if interest.sender.profile.city %}
+                                    · 📍 {{ interest.sender.profile.city }}
+                                {% endif %}
+                            </div>
+                            <div class="interest-date">
+                                Sent on {{ interest.created_at|date:"d M Y" }}
+                            </div>
+                        </div>
+
+                        <!-- Status / Actions -->
+                        <div class="interest-actions">
+                            {% if interest.status == 'pending' %}
+                                <form method="POST"
+                                      action="{% url 'respond_interest' interest.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" name="action"
+                                            value="accept"
+                                            class="btn-accept">
+                                        ✅ Accept
+                                    </button>
+                                    <button type="submit" name="action"
+                                            value="reject"
+                                            class="btn-reject">
+                                        ✖ Decline
+                                    </button>
+                                </form>
+                            {% elif interest.status == 'accepted' %}
+                                <div class="status-badge accepted">
+                                    💞 Matched!
+                                </div>
+                            {% elif interest.status == 'rejected' %}
+                                <div class="status-badge rejected">
+                                    Declined
+                                </div>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">📥</div>
+                    <h3>No Interests Yet</h3>
+                    <p>No one has sent you an interest yet.
+                    Complete your profile to attract more matches!</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- ── TAB: SENT ── -->
+        {% elif active_tab == 'sent' %}
+        <div class="tab-content">
+            {% if sent %}
+                <div class="interests-list">
+                    {% for interest in sent %}
+                    <div class="interest-card
+                        {% if interest.status == 'accepted' %}accepted
+                        {% elif interest.status == 'rejected' %}rejected
+                        {% endif %}">
+
+                        <!-- Photo -->
+                        <div class="interest-photo">
+                            {% if interest.receiver.profile.profile_photo %}
+                                <img src="{{ interest.receiver.profile.profile_photo.url }}"
+                                     alt="{{ interest.receiver.get_full_name }}"/>
+                            {% else %}
+                                <div class="interest-initial">
+                                    {{ interest.receiver.first_name|first|upper }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Info -->
+                        <div class="interest-info">
+                            <div class="interest-name">
+                                {{ interest.receiver.get_full_name }}
+                                {% if interest.receiver.profile.verified_badge %}
+                                    ✅
+                                {% endif %}
+                            </div>
+                            <div class="interest-meta">
+                                {% if interest.receiver.profile.profession %}
+                                    💼 {{ interest.receiver.profile.profession }}
+                                {% endif %}
+                                {% if interest.receiver.profile.city %}
+                                    · 📍 {{ interest.receiver.profile.city }}
+                                {% endif %}
+                            </div>
+                            <div class="interest-date">
+                                Sent on {{ interest.created_at|date:"d M Y" }}
+                            </div>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="interest-actions">
+                            {% if interest.status == 'pending' %}
+                                <div class="status-badge pending">
+                                    ⏳ Pending
+                                </div>
+                            {% elif interest.status == 'accepted' %}
+                                <div class="status-badge accepted">
+                                    💞 Matched!
+                                </div>
+                            {% elif interest.status == 'rejected' %}
+                                <div class="status-badge rejected">
+                                    ✖ Declined
+                                </div>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">📤</div>
+                    <h3>No Interests Sent</h3>
+                    <p>You haven't sent any interests yet.
+                    Browse profiles and find someone you like!</p>
+                    <a href="{% url 'browse_profiles' %}"
+                       class="btn-empty-action">
+                        Browse Profiles →
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- ── TAB: MATCHES ── -->
+        {% elif active_tab == 'matches' %}
+<div class="tab-content">
+    {% if matched_users %}
+        <div class="matches-grid">
+            {% for match_user in matched_users %}
+            <div class="match-card">
+                <div class="match-heart">💞</div>
+
+                <!-- Photo -->
+                <div class="match-photo">
+                    {% if match_user.profile.profile_photo %}
+                        <img src="{{ match_user.profile.profile_photo.url }}"
+                             alt="{{ match_user.get_full_name }}"/>
+                    {% else %}
+                        <div class="match-initial">
+                            {{ match_user.first_name|first|upper }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="match-name">
+                    {{ match_user.get_full_name }}
+                    {% if match_user.profile.verified_badge %}✅{% endif %}
+                </div>
+                <div class="match-meta">
+                    {% if match_user.profile.profession %}
+                        {{ match_user.profile.profession }}
+                    {% endif %}
+                </div>
+                <div class="match-location">
+                    {% if match_user.profile.city %}
+                        📍 {{ match_user.profile.city }}
+                    {% endif %}
+                </div>
+
+                <!-- Chat Button — unlocked! -->
+                <a href="{% url 'chat' match_user.id %}"
+                   class="btn-open-chat">
+                    💬 Open Chat
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">💞</div>
+            <h3>No Matches Yet</h3>
+            <p>When both you and another person accept
+            each other's interest, it becomes a match!</p>
+            <a href="{% url 'browse_profiles' %}"
+               class="btn-empty-action">
+                Browse Profiles →
+            </a>
+        </div>
+    {% endif %}
+</div>
+        {% endif %}
+
+    </div>
+</div>
+</body>
+</html>

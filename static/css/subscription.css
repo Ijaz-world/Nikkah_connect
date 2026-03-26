@@ -1,0 +1,590 @@
+/* =============================================
+   NIKKAH CONNECT — Subscription & Pricing
+   Theme: Coral & Sand
+   ============================================= */
+
+/* ─── PRICING PAGE ─── */
+.pricing-content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+}
+.pricing-header {
+    margin-bottom: 32px;
+}
+.pricing-header h1 {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 8px 0 6px;
+}
+.pricing-header p { font-size: 14px; color: var(--text-muted); }
+
+/* Gold Active Banner */
+.gold-active-banner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 24px;
+    background: rgba(255,193,7,0.1);
+    border: 1.5px solid rgba(255,193,7,0.4);
+    border-radius: 16px;
+    margin-bottom: 28px;
+    font-size: 24px;
+}
+.gold-active-banner strong { color: var(--text-dark); display: block; margin-bottom: 4px; }
+.gold-active-banner p { font-size: 14px; color: var(--text-muted); margin: 0; }
+.gold-active-banner a { color: var(--coral); font-weight: 600; }
+
+.pending-banner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 24px;
+    background: rgba(240,165,0,0.08);
+    border: 1.5px solid rgba(240,165,0,0.3);
+    border-radius: 16px;
+    margin-bottom: 28px;
+    font-size: 24px;
+}
+.pending-banner strong { color: var(--text-dark); display: block; margin-bottom: 4px; }
+.pending-banner p { font-size: 14px; color: var(--text-muted); margin: 0; }
+
+/* Plans Grid */
+.plans-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 40px;
+}
+.plan-card {
+    background: var(--white);
+    border: 1.5px solid var(--sand-deep);
+    border-radius: 24px;
+    padding: 32px 28px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.gold-plan {
+    border-color: rgba(255,193,7,0.5);
+    box-shadow: 0 4px 24px rgba(255,193,7,0.15);
+}
+.plan-badge {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 5px 18px;
+    background: var(--sand-deep);
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-mid);
+    white-space: nowrap;
+}
+.plan-badge.gold {
+    background: linear-gradient(135deg, #ffd700, #ffa500);
+    color: #5a3e00;
+}
+.plan-icon { font-size: 40px; text-align: center; }
+.plan-card h2 {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-dark);
+    text-align: center;
+}
+.plan-price { text-align: center; }
+.price-amount {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--coral);
+}
+.price-period { font-size: 14px; color: var(--text-muted); margin-left: 4px; }
+.plan-features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+}
+.plan-features li { font-size: 14px; color: var(--text-mid); }
+.feat-no { opacity: 0.5; }
+
+/* Duration Tabs */
+.duration-tabs {
+    display: flex;
+    gap: 6px;
+    background: var(--cream);
+    border-radius: 12px;
+    padding: 4px;
+}
+.dur-tab {
+    flex: 1;
+    padding: 8px 6px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.dur-tab.active {
+    background: var(--white);
+    color: var(--coral-deep);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Plan Buttons */
+.btn-current-plan {
+    width: 100%;
+    padding: 13px;
+    background: var(--sand);
+    color: var(--text-muted);
+    border: 1.5px solid var(--sand-deep);
+    border-radius: 50px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: not-allowed;
+}
+.btn-upgrade-now {
+    display: block;
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, #ffd700, #ffa500);
+    color: #5a3e00;
+    border: none;
+    border-radius: 50px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 16px rgba(255,193,7,0.3);
+}
+.btn-upgrade-now:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(255,193,7,0.4);
+}
+.btn-gold-active,
+.btn-gold-pending {
+    width: 100%;
+    padding: 13px;
+    background: var(--sand);
+    color: var(--text-muted);
+    border: 1.5px solid var(--sand-deep);
+    border-radius: 50px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: not-allowed;
+}
+
+/* How It Works */
+.how-it-works {
+    background: var(--white);
+    border: 1.5px solid var(--sand-deep);
+    border-radius: 20px;
+    padding: 28px;
+}
+.how-it-works h3 {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 20px;
+}
+.steps-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.how-step {
+    flex: 1;
+    min-width: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+}
+.how-step-num {
+    width: 36px; height: 36px;
+    background: var(--coral-pale);
+    border: 2px solid var(--coral-border);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 16px; color: var(--coral-deep);
+}
+.how-step-text { font-size: 13px; color: var(--text-mid); line-height: 1.5; }
+.how-arrow { font-size: 20px; color: var(--text-light); flex-shrink: 0; }
+
+/* ─── UPGRADE PAGE ─── */
+.upgrade-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+}
+.upgrade-header { margin-bottom: 32px; }
+.upgrade-header h1 {
+    font-family: var(--font-display);
+    font-size: 30px; font-weight: 700;
+    color: var(--text-dark);
+    margin: 8px 0 6px;
+}
+.upgrade-header p { font-size: 14px; color: var(--text-muted); }
+
+.upgrade-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+/* Instruction Cards */
+.instruction-card {
+    background: var(--white);
+    border: 1.5px solid var(--sand-deep);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 16px;
+}
+.instruction-step {
+    display: inline-block;
+    padding: 4px 14px;
+    background: var(--coral-pale);
+    border: 1px solid var(--coral-border);
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--coral-deep);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 12px;
+}
+.instruction-card h3 {
+    font-family: var(--font-display);
+    font-size: 17px; font-weight: 700;
+    color: var(--text-dark); margin-bottom: 8px;
+}
+.instruction-card p { font-size: 13px; color: var(--text-mid); line-height: 1.6; margin-bottom: 14px; }
+.info-card { background: var(--cream); }
+
+/* Plan Options */
+.plan-options { display: flex; flex-direction: column; gap: 10px; }
+.plan-option { cursor: pointer; }
+.plan-option input[type="radio"] { display: none; }
+.plan-option-inner {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 18px;
+    border: 1.5px solid var(--sand-deep);
+    border-radius: 12px;
+    background: var(--cream);
+    transition: all 0.2s;
+}
+.plan-option.selected .plan-option-inner,
+.plan-option:hover .plan-option-inner {
+    border-color: var(--coral);
+    background: var(--coral-pale);
+}
+.plan-option-name { font-size: 14px; font-weight: 600; color: var(--text-dark); }
+.plan-option-price { font-size: 14px; font-weight: 700; color: var(--coral); }
+
+/* Payment Accounts */
+.payment-accounts { display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px; }
+.payment-account {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 18px;
+    border-radius: 14px;
+    border: 1.5px solid var(--sand-deep);
+}
+.jazzcash-account { background: rgba(255,107,0,0.05); border-color: rgba(255,107,0,0.2); }
+.easypaisa-account { background: rgba(0,160,70,0.05); border-color: rgba(0,160,70,0.2); }
+.account-logo {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 700; color: var(--text-dark);
+    min-width: 90px;
+}
+.account-logo-icon { font-size: 18px; }
+.account-number {
+    flex: 1;
+    font-size: 16px; font-weight: 700;
+    color: var(--text-dark);
+    letter-spacing: 0.5px;
+}
+.btn-copy {
+    padding: 6px 14px;
+    background: var(--white);
+    border: 1.5px solid var(--sand-deep);
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+    color: var(--text-mid);
+}
+.btn-copy:hover { border-color: var(--coral); color: var(--coral); }
+
+.amount-reminder {
+    padding: 10px 16px;
+    background: var(--coral-pale);
+    border: 1px solid var(--coral-border);
+    border-radius: 10px;
+    font-size: 13px; color: var(--coral-deep);
+}
+.amount-reminder strong { font-weight: 700; }
+
+.txn-example {
+    display: inline-block;
+    padding: 8px 20px;
+    background: var(--text-dark);
+    color: var(--white);
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 15px;
+    letter-spacing: 1px;
+    margin: 12px 0;
+}
+
+/* Form Card */
+
+.upgrade-form-card {
+    background: var(--white);
+    border: 1.5px solid var(--sand-deep);
+    border-radius: 20px;
+    padding: 28px;
+    position: sticky;
+    top: 24px;
+}
+.upgrade-form-card h3 {
+    font-family: var(--font-display);
+    font-size: 20px; font-weight: 700;
+    color: var(--text-dark); margin-bottom: 6px;
+}
+.upgrade-form-card > p { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+
+.form-group { margin-bottom: 18px; }
+.form-group label {
+    display: block;
+    font-size: 12px; font-weight: 700;
+    color: var(--text-mid);
+    text-transform: uppercase; letter-spacing: 0.8px;
+    margin-bottom: 8px;
+}
+.form-group input[type="text"] {
+    width: 100%; padding: 12px 16px;
+    border: 1.5px solid var(--sand-deep);
+    border-radius: 12px;
+    font-family: var(--font-body); font-size: 14px;
+    color: var(--text-dark); background: var(--cream);
+    outline: none; transition: all 0.25s;
+}
+.form-group input[type="text"]:focus {
+    border-color: var(--coral);
+    background: var(--white);
+    box-shadow: 0 0 0 4px var(--coral-pale);
+}
+.form-hint { display: block; font-size: 11px; color: var(--text-light); margin-top: 6px; }
+
+/* Method Options */
+.method-options { display: flex; gap: 10px; }
+.method-option { cursor: pointer; flex: 1; }
+.method-option input[type="radio"] { display: none; }
+.method-label {
+    display: block; text-align: center;
+    padding: 10px 14px;
+    border: 1.5px solid var(--sand-deep);
+    border-radius: 12px;
+    font-size: 13px; font-weight: 600;
+    color: var(--text-mid);
+    background: var(--cream);
+    transition: all 0.2s;
+}
+.method-option input:checked + .method-label {
+    border-color: var(--coral);
+    background: var(--coral-pale);
+    color: var(--coral-deep);
+}
+
+/* Payment Summary */
+.payment-summary {
+    background: var(--cream);
+    border: 1px solid var(--sand-deep);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 18px;
+}
+.summary-row {
+    display: flex; justify-content: space-between;
+    font-size: 14px; color: var(--text-mid);
+    padding: 4px 0;
+}
+.summary-row span:last-child { font-weight: 700; color: var(--text-dark); }
+
+.btn-submit-payment {
+    width: 100%; padding: 14px;
+    background: linear-gradient(135deg, #ffd700, #ffa500);
+    color: #5a3e00;
+    border: none; border-radius: 50px;
+    font-family: var(--font-body);
+    font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: all 0.3s;
+    box-shadow: 0 4px 16px rgba(255,193,7,0.3);
+    margin-bottom: 14px;
+}
+.btn-submit-payment:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(255,193,7,0.4);
+}
+.form-note {
+    font-size: 12px; color: var(--text-muted);
+    text-align: center; line-height: 1.6;
+}
+
+/* ─── MY SUBSCRIPTION PAGE ─── */
+.subscription-content {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+}
+.subscription-header { margin-bottom: 28px; }
+.subscription-header h1 {
+    font-family: var(--font-display);
+    font-size: 30px; font-weight: 700;
+    color: var(--text-dark); margin: 8px 0 4px;
+}
+.subscription-header p { font-size: 14px; color: var(--text-muted); }
+
+/* Status Card */
+.sub-status-card {
+    display: flex; align-items: center; gap: 16px;
+    padding: 22px 24px;
+    border-radius: 20px;
+    margin-bottom: 28px;
+    border: 1.5px solid;
+}
+.gold-active {
+    background: rgba(255,193,7,0.08);
+    border-color: rgba(255,193,7,0.4);
+}
+.free-active {
+    background: var(--cream);
+    border-color: var(--sand-deep);
+}
+.sub-status-icon { font-size: 36px; flex-shrink: 0; }
+.sub-status-info { flex: 1; }
+.sub-status-info h3 {
+    font-family: var(--font-display);
+    font-size: 18px; font-weight: 700;
+    color: var(--text-dark); margin-bottom: 4px;
+}
+.sub-status-info p { font-size: 13px; color: var(--text-muted); margin: 2px 0; }
+.btn-renew {
+    padding: 10px 22px;
+    background: linear-gradient(135deg, #ffd700, #ffa500);
+    color: #5a3e00;
+    text-decoration: none;
+    border-radius: 50px;
+    font-size: 13px; font-weight: 700;
+    transition: all 0.25s;
+    white-space: nowrap;
+}
+.btn-renew:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,193,7,0.3); }
+
+/* Payment History */
+.payment-history h3 {
+    font-family: var(--font-display);
+    font-size: 18px; font-weight: 700;
+    color: var(--text-dark); margin-bottom: 16px;
+}
+.history-list { display: flex; flex-direction: column; gap: 12px; }
+.history-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 20px;
+    background: var(--white);
+    border: 1.5px solid var(--sand-deep);
+    border-radius: 14px;
+}
+.history-plan { font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; }
+.history-method { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+.history-date { font-size: 11px; color: var(--text-light); }
+.history-amount { font-size: 16px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; text-align: right; }
+.history-status {
+    font-size: 12px; font-weight: 700;
+    padding: 4px 12px; border-radius: 50px;
+    text-align: right;
+}
+.history-status.pending  { background: rgba(240,165,0,0.1); color: #92610a; }
+.history-status.active   { background: rgba(255,193,7,0.15); color: #5a3e00; }
+.history-status.expired  { background: var(--sand); color: var(--text-muted); }
+.history-status.rejected { background: rgba(231,76,60,0.1); color: #c0392b; }
+
+/* ─── DASHBOARD CARDS ─── */
+.upgrade-card {
+    text-align: center;
+    padding: 24px;
+}
+.upgrade-card .upgrade-icon { font-size: 36px; margin-bottom: 10px; }
+.upgrade-card h3 {
+    font-family: var(--font-display);
+    font-size: 18px; font-weight: 700;
+    color: var(--text-dark); margin-bottom: 6px;
+}
+.upgrade-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+.btn-upgrade {
+    display: inline-block;
+    padding: 10px 24px;
+    background: linear-gradient(135deg, #ffd700, #ffa500);
+    color: #5a3e00;
+    text-decoration: none;
+    border-radius: 50px;
+    font-size: 13px; font-weight: 700;
+    transition: all 0.25s;
+    box-shadow: 0 3px 12px rgba(255,193,7,0.3);
+}
+.btn-upgrade:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,193,7,0.4); }
+
+.gold-status-card {
+    display: flex; align-items: center;
+    gap: 14px; padding: 18px 22px;
+}
+.gold-status-icon { font-size: 30px; flex-shrink: 0; }
+.gold-status-text h3 {
+    font-family: var(--font-display);
+    font-size: 16px; font-weight: 700;
+    color: var(--text-dark); margin-bottom: 3px;
+}
+.gold-status-text p { font-size: 12px; color: var(--text-muted); }
+
+.gold-badge-inline {
+    display: inline-block;
+    padding: 3px 12px;
+    background: linear-gradient(135deg, #ffd700, #ffa500);
+    color: #5a3e00;
+    border-radius: 50px;
+    font-size: 13px; font-weight: 700;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+    .plans-grid { grid-template-columns: 1fr; }
+    .upgrade-grid { grid-template-columns: 1fr; }
+    .steps-row { flex-direction: column; }
+    .how-arrow { transform: rotate(90deg); }
+    .pricing-content,
+    .upgrade-content,
+    .subscription-content { padding: 24px 16px; }
+}

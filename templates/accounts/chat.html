@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Chat with {{ other_user.first_name }} — Nikkah Connect</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/chat.css' %}">
+</head>
+<body>
+<div class="dashboard-wrapper">
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a class="navbar-brand" href="{% url 'dashboard' %}">
+            <span class="brand-icon">💍</span>
+            <span class="brand-name">Nikkah<em>Connect</em></span>
+        </a>
+        <div class="navbar-right">
+            <a href="{% url 'browse_profiles' %}" class="nav-action-link">
+                🔍 Browse
+            </a>
+            <a href="{% url 'my_interests' %}" class="nav-action-link">
+                💌 Interests
+            </a>
+            <a href="{% url 'notifications' %}" class="nav-action-link notif-nav-link">
+                🔔 Alerts
+                {% with unread=request.user.notifications.all %}
+                    {% if unread %}
+                        <span class="notif-badge">{{ unread|length }}</span>
+                    {% endif %}
+                {% endwith %}
+            </a>
+            <a href="{% url 'pricing' %}" class="nav-action-link">
+                💛 Gold
+            </a>
+            <div class="navbar-user">
+                <div class="navbar-avatar">
+                    {{ request.user.first_name|first|upper }}
+                </div>
+                <span>{{ request.user.first_name }}</span>
+            </div>
+            <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="chat-wrapper">
+
+        <!-- CHAT SIDEBAR -->
+        <div class="chat-sidebar">
+            <div class="chat-sidebar-header">
+                <a href="{% url 'my_interests' %}?tab=matches"
+                   class="back-link">← Matches</a>
+                <h3>💬 Chats</h3>
+            </div>
+            <div class="chat-sidebar-user active">
+                <div class="csb-photo">
+                    {% if other_user.profile.profile_photo %}
+                        <img src="{{ other_user.profile.profile_photo.url }}"
+                             alt="{{ other_user.first_name }}"/>
+                    {% else %}
+                        <div class="csb-initial">
+                            {{ other_user.first_name|first|upper }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="csb-info">
+                    <div class="csb-name">
+                        {{ other_user.get_full_name }}
+                        {% if other_user.profile.verified_badge %}✅{% endif %}
+                    </div>
+                    <div class="csb-last">
+                        {% if other_user.profile.city %}
+                            📍 {{ other_user.profile.city }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wali Mode Section -->
+            <div class="wali-section">
+                <div class="wali-section-title">
+                    🛡️ Guardian / Wali Mode
+                </div>
+                <p class="wali-desc">
+                    Invite a family member to view this conversation
+                    for transparency and trust.
+                </p>
+
+                <!-- Invite Form -->
+                <form method="POST"
+                      action="{% url 'invite_wali' conversation.id %}">
+                    {% csrf_token %}
+                    <div class="wali-form-group">
+                        <input type="text" name="wali_name"
+                               placeholder="Guardian's Name"
+                               required/>
+                    </div>
+                    <div class="wali-form-group">
+                        <input type="email" name="wali_email"
+                               placeholder="Guardian's Email"
+                               required/>
+                    </div>
+                    <button type="submit" class="btn-invite-wali">
+                        📧 Send Invite
+                    </button>
+                </form>
+
+                <!-- Existing Wali Invites -->
+                {% if wali_invites %}
+                <div class="wali-invites-list">
+                    <div class="wali-invites-title">Invited Guardians</div>
+                    {% for invite in wali_invites %}
+                    <div class="wali-invite-item">
+                        <span class="wali-invite-name">
+                            {{ invite.wali_name }}
+                        </span>
+                        <span class="wali-invite-status {{ invite.status }}">
+                            {% if invite.status == 'accepted' %}
+                                ✅ Viewing
+                            {% elif invite.status == 'pending' %}
+                                ⏳ Invited
+                            {% else %}
+                                ✖ Declined
+                            {% endif %}
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- CHAT MAIN -->
+        <div class="chat-main">
+
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="chat-header-photo">
+                    {% if other_user.profile.profile_photo %}
+                        <img src="{{ other_user.profile.profile_photo.url }}"
+                             alt="{{ other_user.first_name }}"/>
+                    {% else %}
+                        <div class="chat-header-initial">
+                            {{ other_user.first_name|first|upper }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="chat-header-info">
+                    <div class="chat-header-name">
+                        {{ other_user.get_full_name }}
+                        {% if other_user.profile.verified_badge %}✅{% endif %}
+                    </div>
+                    <div class="chat-header-status">
+                        💞 Mutual Match
+                        {% if wali_invites %}
+                            · 🛡️ Guardian Mode Active
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="chat-encryption-note">
+                    🔒 Messages are private
+                </div>
+            </div>
+
+            <!-- Django Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}"
+                         style="margin: 10px 20px 0;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Messages Area -->
+            <div class="chat-messages-wrap" id="chatMessages">
+                {% if chat_messages %}
+                    {% for msg in chat_messages %}
+                    <div class="chat-bubble-wrap
+                        {% if msg.sender == request.user %}mine{% else %}theirs{% endif %}">
+                        <div class="chat-bubble
+                            {% if msg.sender == request.user %}bubble-mine{% else %}bubble-theirs{% endif %}">
+
+                            {% if msg.image %}
+                                <!-- Image message -->
+                                <a href="{{ msg.image.url }}"
+                                   target="_blank"
+                                   class="chat-image-link">
+                                    <img src="{{ msg.image.url }}"
+                                         alt="Photo"
+                                         class="chat-image-thumb"/>
+                                </a>
+                                {% if msg.body %}
+                                    <p class="chat-image-caption">
+                                        {{ msg.body }}
+                                    </p>
+                                {% endif %}
+                            {% else %}
+                                <!-- Text message -->
+                                {{ msg.body }}
+                            {% endif %}
+
+                            <span class="bubble-time">
+                                {{ msg.created_at|time:"H:i" }}
+                                {% if msg.sender == request.user %}
+                                    {% if msg.is_read %}· ✓✓{% else %}· ✓{% endif %}
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="chat-empty">
+                        <div class="chat-empty-icon">💌</div>
+                        <p>No messages yet. Say As-salamu alaykum!</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Message Input -->
+            <div class="chat-input-wrap">
+
+                <!-- Image Preview (shown when photo selected) -->
+                <div class="chat-image-preview"
+                     id="imagePreview"
+                     style="display:none;">
+                    <img id="previewImg" src="" alt="Preview"/>
+                    <button type="button"
+                            class="btn-remove-image"
+                            onclick="removeImage()">
+                        ✕ Remove
+                    </button>
+                </div>
+
+                <form method="POST"
+                      class="chat-input-form"
+                      id="chatForm"
+                      enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <!-- Hidden file input -->
+                    <input type="file"
+                           name="chat_image"
+                           id="chatImageInput"
+                           accept="image/*"
+                           style="display:none;"
+                           onchange="previewImage(this)"/>
+
+                    <!-- Photo Button -->
+                    {% if request.user.is_gold %}
+                        <button type="button"
+                                class="btn-photo-attach"
+                                onclick="document.getElementById('chatImageInput').click()"
+                                title="Send Photo">
+                            📷
+                        </button>
+                    {% else %}
+                        <a href="{% url 'pricing' %}"
+                           class="btn-photo-locked"
+                           title="Gold members only — Click to upgrade">
+                            🔒
+                        </a>
+                    {% endif %}
+
+                    <input type="text"
+                           name="body"
+                           id="messageInput"
+                           placeholder="Type your message..."
+                           autocomplete="off"/>
+
+                    <button type="submit" class="btn-send-msg">
+                        Send ➤
+                    </button>
+                </form>
+
+                <div class="chat-input-note">
+                    🔒 Private
+                    {% if not request.user.is_gold %}
+                        ·
+                        <a href="{% url 'pricing' %}" class="gold-upgrade-hint">
+                            💛 Upgrade to Gold for photo sharing
+                        </a>
+                    {% else %}
+                        · 💛 Gold — Photo sharing enabled
+                    {% endif %}
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // Auto scroll to bottom of messages
+    const chatMessages = document.getElementById('chatMessages');
+    if (chatMessages) {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Send on Enter key
+    const messageInput = document.getElementById('messageInput');
+    if (messageInput) {
+        messageInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                document.getElementById('chatForm').submit();
+            }
+        });
+    }
+
+    // ── Auto-refresh logic ──
+    // Only refresh when input is empty AND user is not focused on it
+    let refreshTimer = null;
+
+    function scheduleRefresh() {
+        clearTimeout(refreshTimer);
+        refreshTimer = setTimeout(function () {
+            if (
+                document.activeElement !== messageInput &&
+                messageInput.value.trim() === ''
+            ) {
+                location.reload();
+            } else {
+                scheduleRefresh();
+            }
+        }, 5000);
+    }
+
+    scheduleRefresh();
+
+    if (messageInput) {
+        messageInput.addEventListener('input', function () {
+            clearTimeout(refreshTimer);
+            if (this.value.trim() === '') {
+                scheduleRefresh();
+            }
+        });
+        messageInput.addEventListener('focus', function () {
+            clearTimeout(refreshTimer);
+        });
+        messageInput.addEventListener('blur', function () {
+            if (this.value.trim() === '') {
+                scheduleRefresh();
+            }
+        });
+    }
+
+    // ── Image preview before sending ──
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('imagePreview').style.display = 'flex';
+            };
+            reader.readAsDataURL(input.files[0]);
+            // Stop auto refresh while image is selected
+            clearTimeout(refreshTimer);
+        }
+    }
+
+    // ── Remove selected image ──
+    function removeImage() {
+        document.getElementById('chatImageInput').value = '';
+        document.getElementById('previewImg').src = '';
+        document.getElementById('imagePreview').style.display = 'none';
+        scheduleRefresh();
+    }
+</script>
+
+</body>
+</html>

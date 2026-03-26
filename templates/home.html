@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Nikkah Connect — Find Your Perfect Match</title>
+    {% load static %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body>
+
+<!-- ░░ FLOATING PARTICLES ░░ -->
+<div class="particles" id="particles"></div>
+
+<!-- ░░ NAVBAR ░░ -->
+<nav class="navbar" id="navbar">
+    <div class="nav-inner">
+        <a href="#" class="nav-logo">
+            <span class="logo-gem">💍</span>
+            <span class="logo-text">Nikkah<em>Connect</em></span>
+        </a>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#stats">Our Story</a>
+        </div>
+        <div class="nav-actions">
+            <a href="{% url 'login' %}" class="btn-ghost">Sign In</a>
+            <a href="{% url 'register' %}" class="btn-coral">Get Started</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ░░ HERO SECTION ░░ -->
+<section class="hero">
+    <div class="hero-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="grid-overlay"></div>
+    </div>
+
+    <div class="hero-content">
+        <div class="hero-badge animate-fade-up" style="animation-delay:0.1s">
+            <span class="badge-dot"></span>
+            Trusted by 10,000+ Families Worldwide
+        </div>
+
+        <h1 class="hero-title animate-fade-up" style="animation-delay:0.25s">
+            Where Sacred Bonds<br/>
+            <em>Begin with Purpose</em>
+        </h1>
+
+        <p class="hero-subtitle animate-fade-up" style="animation-delay:0.4s">
+            A premium matrimonial platform built on trust, privacy, and faith.<br/>
+            Find your life partner the halal way — verified, safe, and dignified.
+        </p>
+
+        <div class="hero-actions animate-fade-up" style="animation-delay:0.55s">
+            <a href="{% url 'register' %}" class="btn-hero-primary">
+                Begin Your Journey
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a href="#how-it-works" class="btn-hero-ghost">
+                <span class="play-icon">▶</span>
+                See How It Works
+            </a>
+        </div>
+
+        <div class="hero-trust animate-fade-up" style="animation-delay:0.7s">
+            <div class="trust-avatars">
+                <div class="avatar av1">A</div>
+                <div class="avatar av2">F</div>
+                <div class="avatar av3">Z</div>
+                <div class="avatar av4">M</div>
+                <div class="avatar av5">+</div>
+            </div>
+            <p><strong>500+ couples</strong> found their match this year</p>
+        </div>
+    </div>
+
+    <div class="hero-card-float animate-fade-up" style="animation-delay:0.8s">
+        <div class="float-card card-match">
+            <div class="card-icon">💕</div>
+            <div>
+                <div class="card-label">New Match!</div>
+                <div class="card-sub">Ahmed & Fatima connected</div>
+            </div>
+        </div>
+        <div class="float-card card-verify">
+            <div class="card-icon">✅</div>
+            <div>
+                <div class="card-label">Profile Verified</div>
+                <div class="card-sub">Identity confirmed</div>
+            </div>
+        </div>
+        <div class="float-card card-safe">
+            <div class="card-icon">🔒</div>
+            <div>
+                <div class="card-label">100% Private</div>
+                <div class="card-sub">Photos blurred by default</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="scroll-hint">
+        <div class="scroll-line"></div>
+        <span>Scroll to explore</span>
+    </div>
+</section>
+
+<!-- ░░ FEATURES SECTION ░░ -->
+<section class="features" id="features">
+    <div class="section-inner">
+        <div class="section-header">
+            <span class="section-tag">Why Choose Us</span>
+            <h2>Everything You Need,<br/><em>Nothing You Don't</em></h2>
+            <p>Built for Muslims who take marriage seriously. Every feature designed with your dignity and privacy in mind.</p>
+        </div>
+
+        <div class="features-grid">
+
+            <div class="feat-card feat-large">
+                <div class="feat-glow"></div>
+                <div class="feat-icon-wrap">🛡️</div>
+                <h3>Verified Profiles Only</h3>
+                <p>Every profile goes through email verification and optional selfie check. No fake accounts, no catfishing — just real people looking for real commitment.</p>
+                <div class="feat-tag">Safety First</div>
+            </div>
+
+            <div class="feat-card">
+                <div class="feat-glow"></div>
+                <div class="feat-icon-wrap">📷</div>
+                <h3>Photo Privacy Controls</h3>
+                <p>Your photos are blurred by default. Only people you match with can see them — you stay in control.</p>
+                <div class="feat-tag">Your Privacy</div>
+            </div>
+
+            <div class="feat-card">
+                <div class="feat-glow"></div>
+                <div class="feat-icon-wrap">❤️</div>
+                <h3>Mutual Match System</h3>
+                <p>Chat only unlocks after both sides show interest. No unwanted messages, no pressure.</p>
+                <div class="feat-tag">Respectful</div>
+            </div>
+
+            <div class="feat-card">
+                <div class="feat-glow"></div>
+                <div class="feat-icon-wrap">👨‍👩‍👧</div>
+                <h3>Guardian / Wali Mode</h3>
+                <p>Invite a family member to join conversations. Complete transparency for families who want to be involved.</p>
+                <div class="feat-tag">Family Friendly</div>
+            </div>
+
+            <div class="feat-card feat-large feat-right">
+                <div class="feat-glow"></div>
+                <div class="feat-icon-wrap">🔍</div>
+                <h3>Smart Matching Engine</h3>
+                <p>Set your preferences — age, location, education, sect, lifestyle — and our system automatically suggests the most compatible profiles for you.</p>
+                <div class="feat-tag">AI Powered</div>
+            </div>
+
+            <div class="feat-card">
+                <div class="feat-glow"></div>
+                <div class="feat-icon-wrap">💬</div>
+                <h3>Encrypted Messaging</h3>
+                <p>All conversations are end-to-end protected. What you say stays between you and your match.</p>
+                <div class="feat-tag">Secure</div>
+            </div>
+
+            <div class="feat-card">
+                <div class="feat-glow"></div>
+                <div class="feat-icon-wrap">🔔</div>
+                <h3>Real-Time Alerts</h3>
+                <p>Instant notifications for likes, matches and messages — never miss a meaningful connection.</p>
+                <div class="feat-tag">Always Updated</div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ░░ HOW IT WORKS ░░ -->
+<section class="how-it-works" id="how-it-works">
+    <div class="hiw-bg">
+        <div class="orb orb-4"></div>
+    </div>
+    <div class="section-inner">
+        <div class="section-header light">
+            <span class="section-tag gold">Simple Process</span>
+            <h2>Three Steps to<br/><em>Your Perfect Match</em></h2>
+            <p>We've made the journey simple, dignified, and stress-free.</p>
+        </div>
+
+        <div class="steps-row">
+            <div class="step-item">
+                <div class="step-number">01</div>
+                <div class="step-icon-big">📝</div>
+                <h3>Create Your Profile</h3>
+                <p>Sign up and fill your profile with your personal details, religious values, lifestyle and what you're looking for in a partner.</p>
+                <a href="{% url 'register' %}" class="step-link">Start Here →</a>
+            </div>
+            <div class="step-connector">
+                <div class="connector-line"></div>
+                <div class="connector-dot"></div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">02</div>
+                <div class="step-icon-big">🔍</div>
+                <h3>Discover Matches</h3>
+                <p>Browse verified profiles, set your preferences and let our smart system suggest the most compatible partners for you.</p>
+            </div>
+            <div class="step-connector">
+                <div class="connector-line"></div>
+                <div class="connector-dot"></div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">03</div>
+                <div class="step-icon-big">💍</div>
+                <h3>Connect & Marry</h3>
+                <p>When both of you show interest, chat opens up. Involve your family, get to know each other, and take the next step.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ░░ STATS SECTION ░░ -->
+<section class="stats-section" id="stats">
+    <div class="section-inner">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" data-target="10000">0</div>
+                <div class="stat-plus">+</div>
+                <div class="stat-label">Registered Members</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" data-target="500">0</div>
+                <div class="stat-plus">+</div>
+                <div class="stat-label">Successful Marriages</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" data-target="98">0</div>
+                <div class="stat-plus">%</div>
+                <div class="stat-label">Verified Profiles</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" data-target="30">0</div>
+                <div class="stat-plus">+</div>
+                <div class="stat-label">Countries Represented</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ░░ CTA SECTION ░░ -->
+<section class="cta-section">
+    <div class="cta-bg">
+        <div class="orb orb-5"></div>
+        <div class="orb orb-6"></div>
+    </div>
+    <div class="section-inner">
+        <div class="cta-inner">
+            <span class="cta-tag">Join Today — It's Free</span>
+            <h2>Your Story Begins<br/><em>With One Step</em></h2>
+            <p>Thousands of families have trusted Nikkah Connect.<br/>Let yours be the next success story.</p>
+            <div class="cta-actions">
+                <a href="{% url 'register' %}" class="btn-hero-primary">
+                    Create Free Account
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+                <a href="{% url 'login' %}" class="btn-hero-ghost light">Already a member? Sign In</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ░░ FOOTER ░░ -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-brand">
+            <span class="logo-gem">💍</span>
+            <span class="logo-text">Nikkah<em>Connect</em></span>
+        </div>
+        <p class="footer-tagline">Connecting hearts the halal way.</p>
+        <div class="footer-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Contact Us</a>
+        </div>
+        <p class="footer-copy">© 2026 NikkahConnect. All rights reserved.</p>
+    </div>
+</footer>
+
+<script>
+// ── Navbar scroll effect
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// ── Floating particles
+const container = document.getElementById('particles');
+for (let i = 0; i < 28; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `
+        left: ${Math.random() * 100}%;
+        top: ${Math.random() * 100}%;
+        width: ${Math.random() * 3 + 1}px;
+        height: ${Math.random() * 3 + 1}px;
+        animation-delay: ${Math.random() * 8}s;
+        animation-duration: ${Math.random() * 10 + 8}s;
+        opacity: ${Math.random() * 0.5 + 0.1};
+    `;
+    container.appendChild(p);
+}
+
+// ── Stat counter animation
+function animateCounters() {
+    document.querySelectorAll('.stat-number').forEach(el => {
+        const target = parseInt(el.dataset.target);
+        const duration = 2000;
+        const step = target / (duration / 16);
+        let current = 0;
+        const timer = setInterval(() => {
+            current = Math.min(current + step, target);
+            el.textContent = Math.floor(current).toLocaleString();
+            if (current >= target) clearInterval(timer);
+        }, 16);
+    });
+}
+
+// ── Intersection observer for stats
+const statsSection = document.querySelector('.stats-section');
+let counted = false;
+const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting && !counted) {
+        counted = true;
+        animateCounters();
+    }
+}, { threshold: 0.3 });
+if (statsSection) observer.observe(statsSection);
+
+// ── Scroll reveal for all sections
+const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+        if (e.isIntersecting) e.target.classList.add('revealed');
+    });
+}, { threshold: 0.1 });
+document.querySelectorAll('.feat-card, .step-item, .stat-card').forEach(el => {
+    el.classList.add('reveal-on-scroll');
+    revealObserver.observe(el);
+});
+</script>
+
+</body>
+</html>

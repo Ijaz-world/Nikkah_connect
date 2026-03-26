@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Notifications — Nikkah Connect</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+</head>
+<body>
+<div class="dashboard-wrapper">
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a class="navbar-brand" href="{% url 'dashboard' %}">
+            <span class="brand-icon">💍</span>
+            <span class="brand-name">Nikkah<em>Connect</em></span>
+        </a>
+        <div class="navbar-right">
+            <a href="{% url 'browse_profiles' %}" class="nav-action-link">
+                🔍 Browse
+            </a>
+            <a href="{% url 'my_interests' %}" class="nav-action-link">
+                💌 Interests
+            </a>
+            <a href="{% url 'notifications' %}" class="nav-action-link notif-nav-link">
+        🔔 Alerts
+        {% with unread=request.user.notifications.all %}
+            {% if unread %}
+                <span class="notif-badge">{{ unread|length }}</span>
+            {% endif %}
+        {% endwith %}
+    </a>
+            <div class="navbar-user">
+                <div class="navbar-avatar">
+                    {{ request.user.first_name|first|upper }}
+                </div>
+                <span>{{ request.user.first_name }}</span>
+            </div>
+            <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="notif-page-content">
+
+        <!-- Header -->
+        <div class="notif-page-header">
+            <div>
+                <a href="{% url 'dashboard' %}" class="back-link">
+                    ← Back to Dashboard
+                </a>
+                <h1>Notifications</h1>
+                <p>{{ notifications|length }}
+                    notification{{ notifications|length|pluralize }}</p>
+            </div>
+        </div>
+
+        <!-- Notifications List -->
+        {% if notifications %}
+        <div class="notif-list">
+            {% for notif in notifications %}
+            <a href="{% url 'mark_notification_read' notif.id %}"
+               class="notif-item {% if not notif.is_read %}unread{% endif %}">
+
+                <!-- Icon -->
+                <div class="notif-icon-wrap
+                    {% if notif.notif_type == 'interest_received' %}type-interest
+                    {% elif notif.notif_type == 'interest_accepted' %}type-accepted
+                    {% elif notif.notif_type == 'new_match' %}type-match
+                    {% elif notif.notif_type == 'new_message' %}type-message
+                    {% endif %}">
+                    {% if notif.notif_type == 'interest_received' %}💌
+                    {% elif notif.notif_type == 'interest_accepted' %}✅
+                    {% elif notif.notif_type == 'new_match' %}💞
+                    {% elif notif.notif_type == 'new_message' %}💬
+                    {% endif %}
+                </div>
+
+                <!-- Sender Photo -->
+                <div class="notif-sender-photo">
+                    {% if notif.sender and notif.sender.profile.profile_photo %}
+                        <img src="{{ notif.sender.profile.profile_photo.url }}"
+                             alt="{{ notif.sender.first_name }}"/>
+                    {% else %}
+                        <div class="notif-sender-initial">
+                            {% if notif.sender %}
+                                {{ notif.sender.first_name|first|upper }}
+                            {% else %}
+                                🔔
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Content -->
+                <div class="notif-content">
+                    <div class="notif-message">{{ notif.message }}</div>
+                    <div class="notif-time">
+                        {{ notif.created_at|timesince }} ago
+                    </div>
+                </div>
+
+                <!-- Unread dot -->
+                {% if not notif.is_read %}
+                    <div class="notif-unread-dot"></div>
+                {% endif %}
+
+            </a>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <div class="notif-empty">
+            <div class="notif-empty-icon">🔔</div>
+            <h3>No Notifications Yet</h3>
+            <p>When someone sends you an interest, accepts yours,
+            or messages you — it will show up here.</p>
+            <a href="{% url 'browse_profiles' %}" class="btn-empty-action">
+                Browse Profiles →
+            </a>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+</body>
+</html>

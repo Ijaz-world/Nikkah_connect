@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Subscriptions — Admin Panel</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+</head>
+<body>
+<div class="admin-wrapper">
+
+    <!-- SIDEBAR -->
+    <div class="admin-sidebar">
+        <div class="admin-brand">
+            <span>💍</span>
+            <span>Admin Panel</span>
+        </div>
+        <nav class="admin-nav">
+            <a href="{% url 'admin_dashboard' %}" class="admin-nav-link">
+                📊 Dashboard
+            </a>
+            <a href="{% url 'admin_users' %}" class="admin-nav-link">
+                👥 Users
+            </a>
+            <a href="{% url 'admin_subscriptions' %}"
+               class="admin-nav-link active">
+                💛 Subscriptions
+            </a>
+        </nav>
+        <div class="admin-sidebar-footer">
+            <div class="admin-user-info">
+                <div class="admin-avatar">
+                    {{ request.user.first_name|first|upper }}
+                </div>
+                <div>
+                    <div class="admin-user-name">
+                        {{ request.user.get_full_name }}
+                    </div>
+                    <div class="admin-user-role">Administrator</div>
+                </div>
+            </div>
+            <a href="{% url 'admin_logout' %}" class="btn-admin-logout">
+                Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="admin-main">
+        <div class="admin-topbar">
+            <h1>💛 Subscriptions</h1>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Filter Tabs -->
+        <div class="admin-filter-tabs">
+            <a href="?filter=pending"
+               class="filter-tab {% if filter_by == 'pending' %}active{% endif %}">
+                ⏳ Pending
+            </a>
+            <a href="?filter=active"
+               class="filter-tab {% if filter_by == 'active' %}active{% endif %}">
+                ✅ Active
+            </a>
+            <a href="?filter=rejected"
+               class="filter-tab {% if filter_by == 'rejected' %}active{% endif %}">
+                ❌ Rejected
+            </a>
+            <a href="?filter=expired"
+               class="filter-tab {% if filter_by == 'expired' %}active{% endif %}">
+                🕐 Expired
+            </a>
+            <a href="?filter=all"
+               class="filter-tab {% if filter_by == 'all' %}active{% endif %}">
+                All
+            </a>
+        </div>
+
+        <!-- Subscriptions Table -->
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h3>{{ subscriptions|length }}
+                    subscription{{ subscriptions|length|pluralize }}</h3>
+            </div>
+            {% if subscriptions %}
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Plan</th>
+                            <th>Method</th>
+                            <th>Transaction ID</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Expiry</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sub in subscriptions %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'admin_user_detail' sub.user.id %}"
+                                   class="table-link">
+                                    {{ sub.user.get_full_name }}
+                                </a>
+                                <div class="table-sub">{{ sub.user.email }}</div>
+                            </td>
+                            <td>{{ sub.get_plan_display }}</td>
+                            <td>
+                                {% if sub.payment_method == 'jazzcash' %}
+                                    🟠 JazzCash
+                                {% else %}
+                                    🟢 Easypaisa
+                                {% endif %}
+                            </td>
+                            <td>
+                                <code class="txn-code">
+                                    {{ sub.transaction_id }}
+                                </code>
+                            </td>
+                            <td>Rs. {{ sub.amount }}</td>
+                            <td class="table-sub">
+                                {{ sub.created_at|date:"d M Y" }}
+                            </td>
+                            <td class="table-sub">
+                                {% if sub.end_date %}
+                                    {{ sub.end_date|date:"d M Y" }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="sub-status-badge {{ sub.status }}">
+                                    {% if sub.status == 'pending' %}⏳ Pending
+                                    {% elif sub.status == 'active' %}✅ Active
+                                    {% elif sub.status == 'expired' %}🕐 Expired
+                                    {% elif sub.status == 'rejected' %}❌ Rejected
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                {% if sub.status == 'pending' %}
+                                <div class="table-actions">
+                                    <form method="POST"
+                                          action="{% url 'admin_approve_subscription' sub.id %}"
+                                          style="display:inline">
+                                        {% csrf_token %}
+                                        <button type="submit"
+                                                class="btn-approve">
+                                            ✅ Approve
+                                        </button>
+                                    </form>
+                                    <form method="POST"
+                                          action="{% url 'admin_reject_subscription' sub.id %}"
+                                          style="display:inline">
+                                        {% csrf_token %}
+                                        <button type="submit"
+                                                class="btn-reject-sm"
+                                                onclick="return confirm('Reject this payment?')">
+                                            ❌ Reject
+                                        </button>
+                                    </form>
+                                </div>
+                                {% else %}
+                                    <span class="table-sub">—</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="admin-empty">
+                <p>No subscriptions found for this filter.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+</body>
+</html>

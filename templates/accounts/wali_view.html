@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Guardian View — Nikkah Connect</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/chat.css' %}">
+</head>
+<body>
+<div class="wali-page-wrapper">
+
+    <!-- WALI HEADER -->
+    <div class="wali-page-header">
+        <div class="wali-brand">
+            <span>💍</span>
+            <span>Nikkah<em>Connect</em></span>
+        </div>
+        <div class="wali-page-badge">
+            🛡️ Guardian / Wali View
+        </div>
+    </div>
+
+    <div class="wali-page-content">
+
+        <!-- Info Card -->
+        <div class="wali-info-card">
+            <div class="wali-info-icon">🛡️</div>
+            <div>
+                <h2>As-salamu alaykum, {{ invite.wali_name }}!</h2>
+                <p>
+                    <strong>{{ invite.invited_by.get_full_name }}</strong>
+                    has invited you to view their conversation as a
+                    Guardian (Wali). This is a read-only view for
+                    transparency and trust.
+                </p>
+                <div class="wali-participants">
+                    <span class="wali-participant">
+                        👤 {{ conversation.user1.get_full_name }}
+                    </span>
+                    <span class="wali-arrow">💬</span>
+                    <span class="wali-participant">
+                        👤 {{ conversation.user2.get_full_name }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Read Only Badge -->
+        <div class="wali-readonly-note">
+            🔒 This is a read-only view. You cannot send messages.
+            Page auto-refreshes every 10 seconds.
+        </div>
+
+        <!-- Messages -->
+        <div class="wali-messages-wrap" id="waliMessages">
+            {% if chat_messages %}
+                {% for msg in chat_messages %}
+                <div class="wali-bubble-wrap
+                    {% if msg.sender == conversation.user1 %}left{% else %}right{% endif %}">
+                    <div class="wali-sender-name">
+                        {{ msg.sender.first_name }}
+                    </div>
+                    <div class="wali-bubble">
+                        {{ msg.body }}
+                        <span class="wali-bubble-time">
+                            {{ msg.created_at|date:"d M" }}
+                            {{ msg.created_at|time:"H:i" }}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="chat-empty">
+                    <div class="chat-empty-icon">💌</div>
+                    <p>No messages yet in this conversation.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="wali-footer">
+            <p>
+                This conversation is monitored with the consent of both
+                participants. JazakAllah Khair for helping guide this
+                process in accordance with Islamic values.
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Scroll to bottom
+    const waliMessages = document.getElementById('waliMessages');
+    if (waliMessages) {
+        waliMessages.scrollTop = waliMessages.scrollHeight;
+    }
+
+    // Auto refresh every 10 seconds (read only, slower is fine)
+    setTimeout(function () {
+        location.reload();
+    }, 10000);
+</script>
+</body>
+</html>

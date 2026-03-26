@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Browse Profiles — Nikkah Connect</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/browse.css' %}">
+</head>
+<body>
+<div class="dashboard-wrapper">
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a class="navbar-brand" href="{% url 'dashboard' %}">
+            <span class="brand-icon">💍</span>
+            <span class="brand-name">Nikkah<em>Connect</em></span>
+        </a>
+        <div class="navbar-right">
+       
+            <a href="{% url 'browse_profiles' %}" class="nav-action-link active">
+                🔍 Browse
+            </a>
+            <a href="{% url 'my_interests' %}" class="nav-action-link">
+                💌 Interests
+            </a>
+            <a href="{% url 'notifications' %}" class="nav-action-link notif-nav-link">
+        🔔 Alerts
+        {% with unread=request.user.notifications.all %}
+            {% if unread %}
+                <span class="notif-badge">{{ unread|length }}</span>
+            {% endif %}
+        {% endwith %}
+    </a>
+    <a href="{% url 'pricing' %}" class="nav-action-link">
+    💛 Gold
+</a>
+            <div class="navbar-user">
+                <div class="navbar-avatar">
+                    {{ request.user.first_name|first|upper }}
+                </div>
+                <span>{{ request.user.first_name }}</span>
+            </div>
+            <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="browse-content">
+
+        <!-- Page Header -->
+        <div class="browse-header">
+            <div>
+                <a href="{% url 'dashboard' %}" class="back-link">
+                    ← Back to Dashboard
+                </a>
+                <h1>Browse Profiles</h1>
+                <p>{{ profiles|length }} profile{{ profiles|length|pluralize }} available</p>
+            </div>
+            <a href="{% url 'my_interests' %}" class="btn-view-interests">
+                💌 My Interests
+            </a>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Profiles Grid -->
+        {% if profiles %}
+        <div class="profiles-grid">
+            {% for profile in profiles %}
+            <div class="profile-card">
+
+                
+                <!-- Photo -->
+<div class="profile-card-photo">
+    {% if profile.user.id in matched_ids %}
+        <!-- Mutual match — show real photo -->
+        {% if profile.profile_photo %}
+            <img src="{{ profile.profile_photo.url }}"
+                 alt="{{ profile.user.get_full_name }}"/>
+        {% else %}
+            <div class="profile-card-initial">
+                {{ profile.user.first_name|first|upper }}
+            </div>
+        {% endif %}
+        {% if profile.verified_badge %}
+            <div class="card-verified-badge" title="Verified">✅</div>
+        {% endif %}
+    {% else %}
+        <!-- Not matched — blurred photo -->
+        {% if profile.profile_photo %}
+            <img src="{{ profile.profile_photo.url }}"
+                 alt="Hidden"
+                 class="photo-blurred"/>
+        {% else %}
+            <div class="profile-card-initial blurred-initial">
+                {{ profile.user.first_name|first|upper }}
+            </div>
+        {% endif %}
+        <div class="photo-lock-overlay">
+            <div class="photo-lock-icon">🔒</div>
+            <div class="photo-lock-text">
+                {% if profile.user.id in sent_interests %}
+                    Awaiting Match
+                {% else %}
+                    Send Interest<br>to Unlock
+                {% endif %}
+            </div>
+        </div>
+        {% if profile.verified_badge %}
+            <div class="card-verified-badge" title="Verified">✅</div>
+        {% endif %}
+    {% endif %}
+</div>
+
+                <!-- Info -->
+                <div class="profile-card-info">
+                    <div class="profile-card-name">
+                        {{ profile.user.first_name }} {{ profile.user.last_name }}
+                    </div>
+
+                    <div class="profile-card-pills">
+                        {% if profile.gender %}
+                            <span class="card-pill">
+                                {{ profile.get_gender_display }}
+                            </span>
+                        {% endif %}
+                        {% if profile.marital_status %}
+                            <span class="card-pill">
+                                {{ profile.get_marital_status_display }}
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="profile-card-details">
+                        {% if profile.city and profile.country %}
+                        <div class="card-detail-row">
+                            <span>📍</span>
+                            <span>{{ profile.city }}, {{ profile.country }}</span>
+                        </div>
+                        {% endif %}
+                        {% if profile.profession %}
+                        <div class="card-detail-row">
+                            <span>💼</span>
+                            <span>{{ profile.profession }}</span>
+                        </div>
+                        {% endif %}
+                        {% if profile.education %}
+                        <div class="card-detail-row">
+                            <span>🎓</span>
+                            <span>{{ profile.get_education_display }}</span>
+                        </div>
+                        {% endif %}
+                        {% if profile.faith_level %}
+                        <div class="card-detail-row">
+                            <span>🕌</span>
+                            <span>{{ profile.get_faith_level_display }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {% if profile.about_me %}
+                    <div class="profile-card-bio">
+                        {{ profile.about_me|truncatechars:100 }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="profile-card-actions">
+                    {% if profile.user.id in sent_interests %}
+                        <button class="btn-interest-sent" disabled>
+                            💌 Interest Sent
+                        </button>
+                    {% else %}
+                        <form method="POST"
+                              action="{% url 'send_interest' profile.user.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-send-interest">
+                                ❤️ Send Interest
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+<div class="empty-state">
+    <div class="empty-icon">🔍</div>
+    <h3>No Profiles Found</h3>
+    {% if preference %}
+        <p>No profiles match your current preferences.
+        Try updating your preferences to see more people.</p>
+        <a href="{% url 'partner_preferences' %}"
+           class="btn-empty-action">
+            Update Preferences →
+        </a>
+    {% else %}
+        <p>Set your partner preferences first so we can
+        suggest the best matches for you.</p>
+        <a href="{% url 'partner_preferences' %}"
+           class="btn-empty-action">
+            Set Preferences →
+        </a>
+    {% endif %}
+</div>
+{% endif %}
+
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dashboard — Nikkah Connect</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard_extra.css' %}">
+    <link rel="stylesheet" href="{% static 'css/preferences.css' %}">
+    <link rel="stylesheet" href="{% static 'css/browse.css' %}">
+    <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+    <link rel="stylesheet" href="{% static 'css/subscription.css' %}">
+</head>
+<body>
+<div class="dashboard-wrapper">
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a class="navbar-brand" href="{% url 'dashboard' %}">
+            <span class="brand-icon">💍</span>
+            <span class="brand-name">Nikkah<em>Connect</em></span>
+        </a>
+        <div class="navbar-right">
+           
+            <a href="{% url 'notifications' %}" class="nav-action-link notif-nav-link">
+                🔔 Alerts
+                {% with unread=request.user.notifications.all %}
+                    {% if unread %}
+                        <span class="notif-badge">{{ unread|length }}</span>
+                    {% endif %}
+                {% endwith %}
+            </a>
+            <a href="{% url 'pricing' %}" class="nav-action-link">
+                💛 Gold
+            </a>
+            <div class="navbar-user">
+                <div class="navbar-avatar">
+                    {{ request.user.first_name|first|upper }}
+                </div>
+                <span>{{ request.user.first_name }} {{ request.user.last_name }}</span>
+            </div>
+            <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+        </div>
+    </nav>
+
+    <!-- CONTENT -->
+    <div class="dashboard-content">
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Welcome Banner -->
+        <div class="welcome-banner">
+            <div class="welcome-left">
+                <div class="welcome-text">
+                    <h2>
+                        As-salamu alaykum,
+                        <span>{{ request.user.first_name }}!</span> 🌙
+                        {% if request.user.is_gold %}
+                            <span class="gold-badge-inline">💛 Gold</span>
+                        {% endif %}
+                    </h2>
+                    <p>Here's an overview of your profile and activity.</p>
+                </div>
+                <!-- Completion Bar -->
+                <div class="completion-wrap">
+                    <div class="completion-header">
+                        <span>Profile Completion</span>
+                        <strong>{{ profile.completion_percentage }}%</strong>
+                    </div>
+                    <div class="completion-bar">
+                        <div class="completion-fill"
+                             style="width: {{ profile.completion_percentage }}%">
+                        </div>
+                    </div>
+                    {% if profile.completion_percentage < 100 %}
+                        <p class="completion-hint">
+                            Complete your profile for better visibility
+                        </p>
+                    {% else %}
+                        <p class="completion-hint done">✅ Profile fully completed!</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="welcome-emoji">💍</div>
+        </div>
+
+        <!-- Quick Action Buttons -->
+        <div class="quick-actions-row">
+            <a href="{% url 'browse_profiles' %}" class="quick-action-btn primary">
+                <span class="qa-icon">🔍</span>
+                <span class="qa-label">Browse Profiles</span>
+            </a>
+            <a href="{% url 'my_interests' %}?tab=received" class="quick-action-btn">
+                <span class="qa-icon">💌</span>
+                <span class="qa-label">My Interests</span>
+            </a>
+            <a href="{% url 'my_interests' %}?tab=matches" class="quick-action-btn">
+                <span class="qa-icon">💞</span>
+                <span class="qa-label">My Matches</span>
+            </a>
+            <a href="{% url 'profile_create_step' step=1 %}" class="quick-action-btn">
+                <span class="qa-icon">✏️</span>
+                <span class="qa-label">Edit Profile</span>
+            </a>
+        </div>
+
+        <!-- Two Column Layout -->
+        <div class="dash-grid">
+
+            <!-- LEFT: Profile Summary Card -->
+            <div class="dash-card profile-summary-card">
+                <div class="card-header">
+                    <h3>My Profile</h3>
+                    <a href="{% url 'profile_detail' %}" class="card-link">
+                        View Full →
+                    </a>
+                </div>
+
+                <div class="profile-summary-inner">
+
+                    <!-- Photo -->
+                    <div class="summary-photo-wrap">
+                        {% if profile.profile_photo %}
+                            <img src="{{ profile.profile_photo.url }}"
+                                 class="summary-photo" alt="Profile"/>
+                        {% else %}
+                            <div class="summary-photo-placeholder">
+                                {{ request.user.first_name|first|upper }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Name -->
+                    <div class="summary-name">
+                        {{ request.user.first_name }} {{ request.user.last_name }}
+                        {% if profile.verified_badge %}
+                            <span class="verified-badge-icon"
+                                  title="Verified Profile">✅</span>
+                        {% endif %}
+                        {% if request.user.is_gold %}
+                            <span class="gold-badge-inline"
+                                  title="Gold Member">💛</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="summary-email">{{ request.user.email }}</div>
+
+                    <!-- Key Info Pills -->
+                    <div class="summary-pills">
+                        {% if profile.gender %}
+                            <span class="info-pill">
+                                {{ profile.get_gender_display }}
+                            </span>
+                        {% endif %}
+                        {% if profile.marital_status %}
+                            <span class="info-pill">
+                                {{ profile.get_marital_status_display }}
+                            </span>
+                        {% endif %}
+                        {% if profile.nationality %}
+                            <span class="info-pill">{{ profile.nationality }}</span>
+                        {% endif %}
+                        {% if profile.education %}
+                            <span class="info-pill">
+                                {{ profile.get_education_display }}
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Quick Info Rows -->
+                    <div class="summary-rows">
+                        {% if profile.city and profile.country %}
+                        <div class="summary-row">
+                            <span class="row-icon">📍</span>
+                            <span>{{ profile.city }}, {{ profile.country }}</span>
+                        </div>
+                        {% endif %}
+                        {% if profile.profession %}
+                        <div class="summary-row">
+                            <span class="row-icon">💼</span>
+                            <span>{{ profile.profession }}</span>
+                        </div>
+                        {% endif %}
+                        {% if profile.faith_level %}
+                        <div class="summary-row">
+                            <span class="row-icon">🕌</span>
+                            <span>{{ profile.get_faith_level_display }}</span>
+                        </div>
+                        {% endif %}
+                        {% if profile.purpose %}
+                        <div class="summary-row">
+                            <span class="row-icon">💍</span>
+                            <span>{{ profile.get_purpose_display }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <a href="{% url 'profile_create_step' step=1 %}"
+                       class="btn-edit-profile">
+                        ✏️ Edit Profile
+                    </a>
+
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN -->
+            <div class="dash-right-col">
+
+                <!-- ── What to do next card ── -->
+                {% if not profile.verified_badge %}
+                <div class="dash-card action-card action-verify">
+                    <div class="action-card-icon">🛡️</div>
+                    <div class="action-card-body">
+                        <h3>Verify Your Profile</h3>
+                        <p>Get a Verified Badge to build trust with potential matches.</p>
+                        <a href="{% url 'verify_profile' %}" class="btn-action-card">
+                            Verify Now →
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if not preference %}
+                <div class="dash-card action-card action-prefs">
+                    <div class="action-card-icon">🎯</div>
+                    <div class="action-card-body">
+                        <h3>Set Partner Preferences</h3>
+                        <p>Tell us what you are looking for to get the best matches.</p>
+                        <a href="{% url 'partner_preferences' %}" class="btn-action-card">
+                            Set Preferences →
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- ── Gold Card ── -->
+                {% if request.user.is_gold %}
+                <div class="dash-card gold-status-card">
+                    <div class="gold-status-icon">💛</div>
+                    <div class="gold-status-text">
+                        <h3>Gold Member</h3>
+                        <p>Your Gold plan is active. Enjoy all premium features!</p>
+                    </div>
+                    <a href="{% url 'my_subscription' %}" class="card-link">
+                        View →
+                    </a>
+                </div>
+                {% else %}
+                <div class="dash-card upgrade-card">
+                    <div class="upgrade-icon">💛</div>
+                    <h3>Upgrade to Gold</h3>
+                    <p>Unlock photo sharing in chat, priority search and Gold badge!</p>
+                    <a href="{% url 'pricing' %}" class="btn-upgrade">
+                        View Plans →
+                    </a>
+                </div>
+                {% endif %}
+
+                <!-- ── Partner Preferences Summary Card ── -->
+                {% if preference %}
+                <div class="dash-card">
+                    <div class="card-header">
+                        <h3>💫 My Preferences</h3>
+                        <a href="{% url 'partner_preferences' %}" class="card-link">
+                            Edit →
+                        </a>
+                    </div>
+                    <div class="pref-rows">
+                        <div class="pref-row">
+                            <span class="pref-icon">🎂</span>
+                            <span class="pref-label">Age Range</span>
+                            <span class="pref-value">
+                                {{ preference.min_age }} – {{ preference.max_age }} years
+                            </span>
+                        </div>
+                        {% if preference.preferred_country %}
+                        <div class="pref-row">
+                            <span class="pref-icon">🌍</span>
+                            <span class="pref-label">Country</span>
+                            <span class="pref-value">
+                                {{ preference.preferred_country }}
+                            </span>
+                        </div>
+                        {% endif %}
+                        <div class="pref-row">
+                            <span class="pref-icon">💍</span>
+                            <span class="pref-label">Marital Status</span>
+                            <span class="pref-value">
+                                {{ preference.get_preferred_marital_status_display }}
+                            </span>
+                        </div>
+                        <div class="pref-row">
+                            <span class="pref-icon">🎓</span>
+                            <span class="pref-label">Education</span>
+                            <span class="pref-value">
+                                {{ preference.get_preferred_education_display }}
+                            </span>
+                        </div>
+                        <div class="pref-row">
+                            <span class="pref-icon">🕌</span>
+                            <span class="pref-label">Faith Level</span>
+                            <span class="pref-value">
+                                {{ preference.get_preferred_faith_level_display }}
+                            </span>
+                        </div>
+                        {% if preference.preferred_caste_sect %}
+                        <div class="pref-row">
+                            <span class="pref-icon">🌿</span>
+                            <span class="pref-label">Caste / Sect</span>
+                            <span class="pref-value">
+                                {{ preference.preferred_caste_sect }}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

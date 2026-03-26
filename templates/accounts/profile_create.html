@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Create Profile — Step {{ step }} of {{ total_steps }} — Nikkah Connect</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a class="navbar-brand" href="{% url 'dashboard' %}">
+        <span class="brand-icon">💍</span>
+        <span class="brand-name">Nikkah<em>Connect</em></span>
+    </a>
+    <div class="navbar-right">
+        <div class="navbar-user">
+            <div class="navbar-avatar">{{ request.user.first_name|first|upper }}</div>
+            <span>{{ request.user.first_name }}</span>
+        </div>
+        <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+    </div>
+</nav>
+
+<!-- MAIN -->
+<div class="wizard-wrapper">
+    <div class="wizard-container">
+
+        <!-- LEFT SIDEBAR — Step Navigator -->
+        <div class="wizard-sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-icon">💍</div>
+                <h3>Profile Setup</h3>
+                <p>Complete your profile to get better matches</p>
+            </div>
+
+            <!-- Completion Ring -->
+            <div class="completion-ring-wrap">
+                <svg class="completion-ring" viewBox="0 0 100 100">
+                    <circle class="ring-bg"   cx="50" cy="50" r="42" />
+                    <circle class="ring-fill" cx="50" cy="50" r="42"
+                        stroke-dasharray="264"
+                        stroke-dashoffset="{{ profile.completion_percentage|default:0 }}"
+                        style="stroke-dashoffset: calc(264 - (264 * {{ profile.completion_percentage|default:0 }} / 100));"
+                    />
+                </svg>
+                <div class="ring-label">
+                    <span class="ring-pct">{{ profile.completion_percentage|default:0 }}%</span>
+                    <span class="ring-sub">Complete</span>
+                </div>
+            </div>
+
+            <!-- Step List -->
+            <ul class="step-nav">
+                {% for num, title in step_titles.items %}
+                <li class="step-nav-item
+                    {% if num < step %}done
+                    {% elif num == step %}active
+                    {% endif %}">
+                    <div class="step-nav-dot">
+                        {% if num < step %}✓{% else %}{{ num }}{% endif %}
+                    </div>
+                    <span>{{ title }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- RIGHT — Form Area -->
+        <div class="wizard-form-area">
+
+            <!-- Progress Bar -->
+            <div class="wizard-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ progress }}%"></div>
+                </div>
+                <span class="progress-label">Step {{ step }} of {{ total_steps }}</span>
+            </div>
+
+            <!-- Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Step Header -->
+            <div class="step-header">
+                <div class="step-badge">Step {{ step }}</div>
+                <h2>{{ step_title }}</h2>
+                <p class="step-desc">
+                    {% if step == 1 %}Tell us about yourself — the basics.
+                    {% elif step == 2 %}Help us understand what you're looking for.
+                    {% elif step == 3 %}Share your educational and professional background.
+                    {% elif step == 4 %}Your faith is important to us — share your religious values.
+                    {% elif step == 5 %}Help potential matches understand your daily lifestyle.
+                    {% elif step == 6 %}Where are you based and where did you grow up?
+                    {% elif step == 7 %}Write a short bio and upload your profile photo.
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- FORM -->
+            <form method="POST" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+
+                <div class="form-fields">
+
+                    {% if step == 1 %}
+                    <!-- ── STEP 1: Basic Info ── -->
+                    <div class="fields-grid two-col">
+                        <div class="form-group">
+                            <label>Date of Birth</label>
+                            <input type="date" name="date_of_birth"
+                                   value="{{ form.date_of_birth.value|default:'' }}"/>
+                            {% if form.date_of_birth.errors %}<span class="error-text">{{ form.date_of_birth.errors.0 }}</span>{% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select name="gender">
+                                <option value="">-- Select --</option>
+                                {% for val, label in form.fields.gender.choices %}
+                                    <option value="{{ val }}" {% if form.gender.value == val %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            {% if form.gender.errors %}<span class="error-text">{{ form.gender.errors.0 }}</span>{% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label>Height</label>
+                            <input type="text" name="height" placeholder="e.g. 5'8&quot;"
+                                   value="{{ form.height.value|default:'' }}"/>
+                            {% if form.height.errors %}<span class="error-text">{{ form.height.errors.0 }}</span>{% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label>Nationality</label>
+                            <input type="text" name="nationality" placeholder="e.g. Pakistani"
+                                   value="{{ form.nationality.value|default:'' }}"/>
+                            {% if form.nationality.errors %}<span class="error-text">{{ form.nationality.errors.0 }}</span>{% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label>Caste / Sect</label>
+                            <input type="text" name="caste_sect" placeholder="e.g. Sunni / Rajput"
+                                   value="{{ form.caste_sect.value|default:'' }}"/>
+                        </div>
+                        <div class="form-group">
+                            <label>Marital Status</label>
+                            <select name="marital_status">
+                                <option value="">-- Select --</option>
+                                {% for val, label in form.fields.marital_status.choices %}
+                                    <option value="{{ val }}" {% if form.marital_status.value == val %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Do you have children?</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="has_children" value="yes"
+                                        {% if form.has_children.value == 'yes' %}checked{% endif %}/>
+                                    <span>Yes</span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="has_children" value="no"
+                                        {% if form.has_children.value == 'no' %}checked{% endif %}/>
+                                    <span>No</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% elif step == 2 %}
+                    <!-- ── STEP 2: Purpose & Discovery ── -->
+                    <div class="fields-grid one-col">
+                        <div class="form-group">
+                            <label>What brings you to Nikkah Connect?</label>
+                            <div class="card-radio-group">
+                                {% for val, label in form.fields.purpose.choices %}
+                                <label class="card-radio {% if form.purpose.value == val %}selected{% endif %}">
+                                    <input type="radio" name="purpose" value="{{ val }}"
+                                        {% if form.purpose.value == val %}checked{% endif %}/>
+                                    <div class="card-radio-inner">
+                                        <span class="card-radio-icon">
+                                            {% if val == 'marriage' %}💍
+                                            {% elif val == 'serious_relation' %}❤️
+                                            {% else %}👨‍👩‍👧{% endif %}
+                                        </span>
+                                        <span class="card-radio-label">{{ label }}</span>
+                                    </div>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>How did you hear about us?</label>
+                            <div class="card-radio-group">
+                                {% for val, label in form.fields.heard_from.choices %}
+                                <label class="card-radio {% if form.heard_from.value == val %}selected{% endif %}">
+                                    <input type="radio" name="heard_from" value="{{ val }}"
+                                        {% if form.heard_from.value == val %}checked{% endif %}/>
+                                    <div class="card-radio-inner">
+                                        <span class="card-radio-icon">
+                                            {% if val == 'social_media' %}📱
+                                            {% elif val == 'app_store' %}🏪
+                                            {% elif val == 'friends' %}👥
+                                            {% else %}📢{% endif %}
+                                        </span>
+                                        <span class="card-radio-label">{{ label }}</span>
+                                    </div>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% elif step == 3 %}
+                    <!-- ── STEP 3: Education & Profession ── -->
+                    <div class="fields-grid one-col">
+                        <div class="form-group">
+                            <label>Education Level</label>
+                            <div class="card-radio-group">
+                                {% for val, label in form.fields.education.choices %}
+                                <label class="card-radio {% if form.education.value == val %}selected{% endif %}">
+                                    <input type="radio" name="education" value="{{ val }}"
+                                        {% if form.education.value == val %}checked{% endif %}/>
+                                    <div class="card-radio-inner">
+                                        <span class="card-radio-icon">🎓</span>
+                                        <span class="card-radio-label">{{ label }}</span>
+                                    </div>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Profession / Occupation</label>
+                            <input type="text" name="profession" placeholder="e.g. Software Engineer, Doctor, Teacher"
+                                   value="{{ form.profession.value|default:'' }}"/>
+                            {% if form.profession.errors %}<span class="error-text">{{ form.profession.errors.0 }}</span>{% endif %}
+                        </div>
+                    </div>
+
+                    {% elif step == 4 %}
+                    <!-- ── STEP 4: Religious Info ── -->
+                    <div class="fields-grid one-col">
+                        <div class="form-group">
+                            <label>Level of Religious Practice</label>
+                            <div class="card-radio-group">
+                                {% for val, label in form.fields.faith_level.choices %}
+                                <label class="card-radio {% if form.faith_level.value == val %}selected{% endif %}">
+                                    <input type="radio" name="faith_level" value="{{ val }}"
+                                        {% if form.faith_level.value == val %}checked{% endif %}/>
+                                    <div class="card-radio-inner">
+                                        <span class="card-radio-icon">🕌</span>
+                                        <span class="card-radio-label">{{ label }}</span>
+                                    </div>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Born a Muslim?</label>
+                            <div class="radio-group">
+                                <label class="radio-option {% if form.born_muslim.value == 'yes' %}active{% endif %}">
+                                    <input type="radio" name="born_muslim" value="yes"
+                                        {% if form.born_muslim.value == 'yes' %}checked{% endif %}/>
+                                    <span>Yes</span>
+                                </label>
+                                <label class="radio-option {% if form.born_muslim.value == 'revert' %}active{% endif %}">
+                                    <input type="radio" name="born_muslim" value="revert"
+                                        {% if form.born_muslim.value == 'revert' %}checked{% endif %}/>
+                                    <span>Revert</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Halal Food Preference</label>
+                            <div class="card-radio-group">
+                                {% for val, label in form.fields.halal_food.choices %}
+                                <label class="card-radio {% if form.halal_food.value == val %}selected{% endif %}">
+                                    <input type="radio" name="halal_food" value="{{ val }}"
+                                        {% if form.halal_food.value == val %}checked{% endif %}/>
+                                    <div class="card-radio-inner">
+                                        <span class="card-radio-icon">🥗</span>
+                                        <span class="card-radio-label">{{ label }}</span>
+                                    </div>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% elif step == 5 %}
+                    <!-- ── STEP 5: Lifestyle ── -->
+                    <div class="fields-grid one-col">
+                        <div class="form-group">
+                            <label>How do you dress?</label>
+                            <div class="card-radio-group">
+                                {% for val, label in form.fields.dress_style.choices %}
+                                <label class="card-radio {% if form.dress_style.value == val %}selected{% endif %}">
+                                    <input type="radio" name="dress_style" value="{{ val }}"
+                                        {% if form.dress_style.value == val %}checked{% endif %}/>
+                                    <div class="card-radio-inner">
+                                        <span class="card-radio-icon">👗</span>
+                                        <span class="card-radio-label">{{ label }}</span>
+                                    </div>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Do you smoke?</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="smoking" value="yes"
+                                        {% if form.smoking.value == 'yes' %}checked{% endif %}/>
+                                    <span>Yes</span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="smoking" value="no"
+                                        {% if form.smoking.value == 'no' %}checked{% endif %}/>
+                                    <span>No</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Do you drink alcohol?</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="drinking" value="yes"
+                                        {% if form.drinking.value == 'yes' %}checked{% endif %}/>
+                                    <span>Yes</span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="drinking" value="no"
+                                        {% if form.drinking.value == 'no' %}checked{% endif %}/>
+                                    <span>No</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% elif step == 6 %}
+                    <!-- ── STEP 6: Location & Background ── -->
+                    <div class="fields-grid two-col">
+                        <div class="form-group">
+                            <label>Country of Residence</label>
+                            <input type="text" name="country" placeholder="e.g. Pakistan"
+                                   value="{{ form.country.value|default:'' }}"/>
+                        </div>
+                        <div class="form-group">
+                            <label>City of Residence</label>
+                            <input type="text" name="city" placeholder="e.g. Lahore"
+                                   value="{{ form.city.value|default:'' }}"/>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Where did you grow up?</label>
+                            <input type="text" name="grew_up_in" placeholder="e.g. Karachi, Pakistan"
+                                   value="{{ form.grew_up_in.value|default:'' }}"/>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Open to marriage abroad?</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="open_to_abroad" value="yes"
+                                        {% if form.open_to_abroad.value == 'yes' %}checked{% endif %}/>
+                                    <span>Yes</span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="open_to_abroad" value="no"
+                                        {% if form.open_to_abroad.value == 'no' %}checked{% endif %}/>
+                                    <span>No</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% elif step == 7 %}
+                    <!-- ── STEP 7: Bio & Photo ── -->
+                    <div class="fields-grid one-col">
+                        <div class="form-group">
+                            <label>About Me</label>
+                            <textarea name="about_me" rows="5"
+                                placeholder="Write a short bio — your personality, values, what you're looking for...">{{ form.about_me.value|default:'' }}</textarea>
+                            {% if form.about_me.errors %}<span class="error-text">{{ form.about_me.errors.0 }}</span>{% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label>Profile Photo</label>
+                            <div class="photo-upload-area" id="photoArea">
+                                {% if profile.profile_photo %}
+                                    <img src="{{ profile.profile_photo.url }}" class="photo-preview" id="photoPreview" alt="Profile"/>
+                                {% else %}
+                                    <img src="" class="photo-preview" id="photoPreview" style="display:none;" alt="Preview"/>
+                                {% endif %}
+                                <div class="photo-placeholder" id="photoPlaceholder"
+                                     {% if profile.profile_photo %}style="display:none"{% endif %}>
+                                    <span class="upload-icon">📷</span>
+                                    <p>Click to upload your photo</p>
+                                    <span class="upload-hint">JPG, PNG — max 5MB</span>
+                                </div>
+                                <input type="file" name="profile_photo" id="photoInput"
+                                       accept="image/*" style="display:none"/>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="wizard-nav">
+                    {% if step > 1 %}
+                    <a href="{% url 'profile_create_step' step=step|add:'-1' %}" class="btn-back">
+                        ← Back
+                    </a>
+                    {% else %}
+                    <div></div>
+                    {% endif %}
+
+                    <button type="submit" class="btn-next">
+                        {% if step == total_steps %}
+                            Complete Profile 🎉
+                        {% else %}
+                            Next Step →
+                        {% endif %}
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Photo upload preview
+const photoArea    = document.getElementById('photoArea');
+const photoInput   = document.getElementById('photoInput');
+const photoPreview = document.getElementById('photoPreview');
+const photoPlaceholder = document.getElementById('photoPlaceholder');
+
+if (photoArea) {
+    photoArea.addEventListener('click', () => photoInput.click());
+    photoInput.addEventListener('change', function () {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                photoPreview.src = e.target.result;
+                photoPreview.style.display = 'block';
+                photoPlaceholder.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+// Card radio highlight on select
+document.querySelectorAll('.card-radio input').forEach(input => {
+    input.addEventListener('change', function () {
+        const group = this.closest('.card-radio-group');
+        group.querySelectorAll('.card-radio').forEach(c => c.classList.remove('selected'));
+        this.closest('.card-radio').classList.add('selected');
+    });
+});
+</script>
+
+</body>
+</html>

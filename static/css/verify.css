@@ -1,0 +1,376 @@
+/* =============================================
+   NIKKAH CONNECT — Profile Verification
+   Theme: Coral & Sand
+   ============================================= */
+
+/* ─── PAGE LAYOUT ─── */
+.verify-content {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 24px;
+}
+
+/* ─── PAGE HEADER ─── */
+.verify-page-header {
+    margin-bottom: 32px;
+}
+.verify-page-header h1 {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 8px 0 6px;
+}
+.verify-page-header p {
+    font-size: 14px;
+    color: var(--text-muted);
+}
+.back-link {
+    font-size: 13px;
+    color: var(--coral);
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 8px;
+    transition: color 0.2s;
+}
+.back-link:hover { color: var(--coral-deep); }
+
+/* ─── STAGES BAR ─── */
+.stages-bar {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 32px;
+    background: var(--white);
+    border: 1.5px solid var(--sand-deep);
+    border-radius: 16px;
+    padding: 20px 32px;
+}
+.stage-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+    flex: 1;
+}
+.stage-item.active { color: var(--coral-deep); font-weight: 600; }
+.stage-item.done   { color: #1a7a45; font-weight: 600; }
+
+.stage-dot {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--sand);
+    border: 2px solid var(--sand-deep);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    transition: all 0.3s;
+}
+.stage-item.active .stage-dot {
+    background: var(--coral);
+    border-color: var(--coral);
+    color: var(--white);
+}
+.stage-item.done .stage-dot {
+    background: #e8f8f0;
+    border-color: #2ecc71;
+    color: #1a7a45;
+}
+
+.stage-line {
+    flex: 1;
+    height: 2px;
+    background: var(--sand-deep);
+    margin: 0 16px;
+}
+
+/* ─── VERIFY CARD ─── */
+.verify-card {
+    background: var(--white);
+    border: 1.5px solid var(--sand-deep);
+    border-radius: 20px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+.verify-card.stage-done {
+    border-color: rgba(46,204,113,0.3);
+    background: #fafffe;
+}
+.verify-card.stage-locked {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Card Header */
+.verify-card-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px 28px;
+    border-bottom: 1px solid var(--sand-deep);
+}
+.stage-done .verify-card-header {
+    border-bottom-color: rgba(46,204,113,0.2);
+}
+
+.stage-num-badge {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--coral-pale);
+    border: 2px solid var(--coral-border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 700;
+    color: var(--coral);
+    flex-shrink: 0;
+}
+.stage-num-badge.badge-done {
+    background: #e8f8f0;
+    border-color: #2ecc71;
+    color: #1a7a45;
+}
+.stage-num-badge.badge-locked {
+    background: var(--sand);
+    border-color: var(--sand-deep);
+    color: var(--text-muted);
+}
+
+.verify-card-header h2 {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+}
+.verify-card-header p {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.stage-check {
+    margin-left: auto;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a7a45;
+    background: #e8f8f0;
+    padding: 6px 14px;
+    border-radius: 50px;
+    border: 1px solid rgba(46,204,113,0.3);
+    white-space: nowrap;
+}
+
+/* Card Body */
+.verify-card-body { padding: 28px; }
+
+/* ─── PHONE DISPLAY ─── */
+.phone-display {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: var(--cream);
+    border: 1.5px solid var(--sand-deep);
+    border-radius: 14px;
+    margin-bottom: 22px;
+}
+.phone-icon { font-size: 32px; }
+.phone-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+.phone-number {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-dark);
+    font-family: var(--font-display);
+}
+
+/* ─── BUTTONS ─── */
+.btn-verify-action {
+    display: inline-block;
+    width: 100%;
+    padding: 14px;
+    text-align: center;
+    background: linear-gradient(135deg, var(--coral) 0%, var(--coral-deep) 100%);
+    color: var(--white);
+    border: none;
+    border-radius: 50px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s;
+    box-shadow: 0 4px 16px var(--coral-glow);
+    letter-spacing: 0.3px;
+}
+.btn-verify-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px var(--coral-glow);
+}
+.btn-verify-action.outline {
+    background: transparent;
+    border: 1.5px solid var(--coral-border);
+    color: var(--coral);
+    box-shadow: none;
+}
+.btn-verify-action.outline:hover {
+    background: var(--coral-pale);
+    box-shadow: none;
+    transform: none;
+}
+
+/* ─── SELFIE TIPS ─── */
+.selfie-tips {
+    background: var(--cream);
+    border: 1px solid var(--sand-deep);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 22px;
+}
+.tip-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-mid);
+    margin-bottom: 12px;
+}
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+.tip-item {
+    font-size: 13px;
+    color: var(--text-mid);
+    font-weight: 500;
+}
+
+/* ─── SELFIE UPLOAD ─── */
+.selfie-upload-area {
+    width: 100%;
+    border: 2px dashed var(--sand-warm);
+    border-radius: 16px;
+    padding: 44px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s;
+    background: var(--cream);
+    margin-bottom: 20px;
+}
+.selfie-upload-area:hover {
+    border-color: var(--coral);
+    background: var(--white);
+}
+.selfie-upload-icon { font-size: 52px; display: block; margin-bottom: 12px; }
+.selfie-placeholder p {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-mid);
+    margin-bottom: 6px;
+}
+.upload-hint { font-size: 12px; color: var(--text-light); }
+
+.selfie-preview {
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--coral-border);
+    display: block;
+    margin: 0 auto 12px;
+}
+
+/* ─── LOCKED BODY ─── */
+.locked-body {
+    background: var(--sand);
+    border-radius: 0 0 18px 18px;
+}
+.locked-msg {
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 500;
+    padding: 8px 0;
+}
+
+/* ─── VERIFIED SUCCESS ─── */
+.verified-success-wrap {
+    text-align: center;
+    padding: 10px 0;
+}
+.verified-big-icon {
+    font-size: 60px;
+    display: block;
+    margin-bottom: 14px;
+}
+.verified-success-wrap h3 {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+}
+.verified-success-wrap p {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    line-height: 1.7;
+}
+.submitted-selfie {
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #2ecc71;
+    display: block;
+    margin: 0 auto 20px;
+}
+
+/* ─── VERIFICATION STATUS (profile_detail) ─── */
+.vstatus {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 600;
+}
+.vstatus.verified {
+    background: #e8f8f0;
+    color: #1a7a45;
+    border: 1px solid rgba(46,204,113,0.3);
+}
+.vstatus.pending {
+    background: rgba(240,165,0,0.1);
+    color: #92610a;
+    border: 1px solid rgba(240,165,0,0.25);
+}
+.vstatus.unverified {
+    background: var(--coral-pale);
+    color: var(--coral-deep);
+    border: 1px solid var(--coral-border);
+}
+.vstatus.unverified a {
+    color: var(--coral);
+    font-weight: 700;
+    text-decoration: underline;
+}
+.verified-badge-icon {
+    font-size: 18px;
+    vertical-align: middle;
+    margin-left: 6px;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+    .verify-content { padding: 24px 16px; }
+    .stages-bar { padding: 16px 20px; }
+    .verify-card-header { flex-wrap: wrap; gap: 12px; }
+    .stage-check { margin-left: 0; }
+    .tips-grid { grid-template-columns: 1fr; }
+}

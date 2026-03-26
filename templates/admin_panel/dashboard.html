@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Admin Dashboard — Nikkah Connect</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+</head>
+<body>
+<div class="admin-wrapper">
+
+    <!-- SIDEBAR -->
+    <div class="admin-sidebar">
+        <div class="admin-brand">
+            <span>💍</span>
+            <span>Admin Panel</span>
+        </div>
+        <nav class="admin-nav">
+            <a href="{% url 'admin_dashboard' %}"
+               class="admin-nav-link active">
+                📊 Dashboard
+            </a>
+            <a href="{% url 'admin_users' %}"
+               class="admin-nav-link">
+                👥 Users
+            </a>
+            <a href="{% url 'admin_subscriptions' %}"
+               class="admin-nav-link">
+                💛 Subscriptions
+                {% if pending_payments > 0 %}
+                    <span class="admin-nav-badge">
+                        {{ pending_payments }}
+                    </span>
+                {% endif %}
+            </a>
+        </nav>
+        <div class="admin-sidebar-footer">
+            <div class="admin-user-info">
+                <div class="admin-avatar">
+                    {{ request.user.first_name|first|upper }}
+                </div>
+                <div>
+                    <div class="admin-user-name">
+                        {{ request.user.get_full_name }}
+                    </div>
+                    <div class="admin-user-role">Administrator</div>
+                </div>
+            </div>
+            <a href="{% url 'admin_logout' %}" class="btn-admin-logout">
+                Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="admin-main">
+
+        <!-- Top Bar -->
+        <div class="admin-topbar">
+            <h1>Dashboard Overview</h1>
+            <div class="admin-topbar-date">
+                Nikkah Connect Admin Panel
+            </div>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Stats Grid -->
+        <div class="admin-stats-grid">
+            <div class="admin-stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-number">{{ total_users }}</div>
+                <div class="stat-label">Total Users</div>
+                <div class="stat-sub">+{{ new_users_today }} today</div>
+            </div>
+            <div class="admin-stat-card gold">
+                <div class="stat-icon">💛</div>
+                <div class="stat-number">{{ total_gold }}</div>
+                <div class="stat-label">Gold Members</div>
+                <div class="stat-sub">Active subscriptions</div>
+            </div>
+            <div class="admin-stat-card pending">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-number">{{ pending_payments }}</div>
+                <div class="stat-label">Pending Payments</div>
+                <div class="stat-sub">Needs approval</div>
+            </div>
+            <div class="admin-stat-card matches">
+                <div class="stat-icon">💞</div>
+                <div class="stat-number">{{ total_matches }}</div>
+                <div class="stat-label">Total Matches</div>
+                <div class="stat-sub">Accepted interests</div>
+            </div>
+            <div class="admin-stat-card blocked">
+                <div class="stat-icon">🚫</div>
+                <div class="stat-number">{{ blocked_users }}</div>
+                <div class="stat-label">Blocked Users</div>
+                <div class="stat-sub">Currently blocked</div>
+            </div>
+        </div>
+
+        <!-- Two Column Layout -->
+        <div class="admin-two-col">
+
+            <!-- Pending Payments -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h3>⏳ Pending Payments</h3>
+                    <a href="{% url 'admin_subscriptions' %}?filter=pending"
+                       class="admin-card-link">
+                        View All →
+                    </a>
+                </div>
+                {% if recent_pending %}
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Plan</th>
+                                <th>Method</th>
+                                <th>Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sub in recent_pending %}
+                            <tr>
+                                <td>
+                                    <div class="table-user">
+                                        {{ sub.user.get_full_name }}
+                                    </div>
+                                    <div class="table-sub">
+                                        {{ sub.user.email }}
+                                    </div>
+                                </td>
+                                <td>{{ sub.get_plan_display }}</td>
+                                <td>
+                                    {% if sub.payment_method == 'jazzcash' %}
+                                        🟠 JazzCash
+                                    {% else %}
+                                        🟢 Easypaisa
+                                    {% endif %}
+                                </td>
+                                <td>Rs. {{ sub.amount }}</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <form method="POST"
+                                              action="{% url 'admin_approve_subscription' sub.id %}"
+                                              style="display:inline">
+                                            {% csrf_token %}
+                                            <button type="submit"
+                                                    class="btn-approve">
+                                                ✅
+                                            </button>
+                                        </form>
+                                        <form method="POST"
+                                              action="{% url 'admin_reject_subscription' sub.id %}"
+                                              style="display:inline">
+                                            {% csrf_token %}
+                                            <button type="submit"
+                                                    class="btn-reject-sm">
+                                                ❌
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="admin-empty">
+                    <p>✅ No pending payments right now!</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Recent Users -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h3>👥 Recent Users</h3>
+                    <a href="{% url 'admin_users' %}"
+                       class="admin-card-link">
+                        View All →
+                    </a>
+                </div>
+                {% if recent_users %}
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Joined</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in recent_users %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'admin_user_detail' user.id %}"
+                                       class="table-link">
+                                        {{ user.get_full_name }}
+                                    </a>
+                                </td>
+                                <td class="table-sub">{{ user.email }}</td>
+                                <td class="table-sub">
+                                    {{ user.date_joined|date:"d M Y" }}
+                                </td>
+                                <td>
+                                    {% if user.is_blocked %}
+                                        <span class="badge-blocked">Blocked</span>
+                                    {% elif user.is_gold %}
+                                        <span class="badge-gold">💛 Gold</span>
+                                    {% else %}
+                                        <span class="badge-free">Free</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="admin-empty">
+                    <p>No users yet.</p>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Users — Admin Panel</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+</head>
+<body>
+<div class="admin-wrapper">
+
+    <!-- SIDEBAR -->
+    <div class="admin-sidebar">
+        <div class="admin-brand">
+            <span>💍</span>
+            <span>Admin Panel</span>
+        </div>
+        <nav class="admin-nav">
+            <a href="{% url 'admin_dashboard' %}" class="admin-nav-link">
+                📊 Dashboard
+            </a>
+            <a href="{% url 'admin_users' %}" class="admin-nav-link active">
+                👥 Users
+            </a>
+            <a href="{% url 'admin_subscriptions' %}" class="admin-nav-link">
+                💛 Subscriptions
+            </a>
+        </nav>
+        <div class="admin-sidebar-footer">
+            <div class="admin-user-info">
+                <div class="admin-avatar">
+                    {{ request.user.first_name|first|upper }}
+                </div>
+                <div>
+                    <div class="admin-user-name">
+                        {{ request.user.get_full_name }}
+                    </div>
+                    <div class="admin-user-role">Administrator</div>
+                </div>
+            </div>
+            <a href="{% url 'admin_logout' %}" class="btn-admin-logout">
+                Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="admin-main">
+        <div class="admin-topbar">
+            <h1>👥 All Users</h1>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Search & Filter -->
+        <div class="admin-card" style="margin-bottom: 20px;">
+            <form method="GET" class="admin-search-bar">
+                <input type="text" name="search"
+                       value="{{ search }}"
+                       placeholder="Search by name or email..."/>
+                <select name="filter">
+                    <option value="all"
+                        {% if filter_by == 'all' %}selected{% endif %}>
+                        All Users
+                    </option>
+                    <option value="gold"
+                        {% if filter_by == 'gold' %}selected{% endif %}>
+                        Gold Members
+                    </option>
+                    <option value="blocked"
+                        {% if filter_by == 'blocked' %}selected{% endif %}>
+                        Blocked Users
+                    </option>
+                    <option value="unverified"
+                        {% if filter_by == 'unverified' %}selected{% endif %}>
+                        Unverified
+                    </option>
+                </select>
+                <button type="submit" class="btn-admin-search">
+                    🔍 Search
+                </button>
+            </form>
+        </div>
+
+        <!-- Users Table -->
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h3>{{ users|length }} user{{ users|length|pluralize }} found</h3>
+            </div>
+            {% if users %}
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Joined</th>
+                            <th>Verified</th>
+                            <th>Plan</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr {% if user.is_blocked %}class="row-blocked"{% endif %}>
+                            <td>
+                                <a href="{% url 'admin_user_detail' user.id %}"
+                                   class="table-link">
+                                    {{ user.get_full_name|default:user.username }}
+                                </a>
+                            </td>
+                            <td class="table-sub">{{ user.email }}</td>
+                            <td class="table-sub">
+                                {{ user.date_joined|date:"d M Y" }}
+                            </td>
+                            <td>
+                                {% if user.profile.verified_badge %}
+                                    ✅
+                                {% else %}
+                                    ❌
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.is_gold %}
+                                    <span class="badge-gold">💛 Gold</span>
+                                {% else %}
+                                    <span class="badge-free">Free</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.is_blocked %}
+                                    <span class="badge-blocked">🚫 Blocked</span>
+                                {% else %}
+                                    <span class="badge-active">✅ Active</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'admin_user_detail' user.id %}"
+                                   class="btn-view-sm">
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="admin-empty">
+                <p>No users found matching your search.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+</body>
+</html>

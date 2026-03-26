@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Admin Login — Nikkah Connect</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        .admin-login-wrap {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--cream);
+        }
+        .admin-login-card {
+            background: var(--white);
+            border: 1.5px solid var(--sand-deep);
+            border-radius: 24px;
+            padding: 48px 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: var(--shadow-lg);
+        }
+        .admin-login-logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .admin-login-logo .brand-icon { font-size: 40px; }
+        .admin-login-logo h1 {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 10px 0 4px;
+        }
+        .admin-login-logo p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .admin-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            background: var(--coral-pale);
+            border: 1px solid var(--coral-border);
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--coral-deep);
+            margin-bottom: 8px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-mid);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--sand-deep);
+            border-radius: 12px;
+            font-family: var(--font-body);
+            font-size: 14px;
+            color: var(--text-dark);
+            background: var(--cream);
+            outline: none;
+            transition: all 0.25s;
+        }
+        .form-group input:focus {
+            border-color: var(--coral);
+            background: var(--white);
+            box-shadow: 0 0 0 4px var(--coral-pale);
+        }
+        .btn-admin-login {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--coral) 0%, var(--coral-deep) 100%);
+            color: var(--white);
+            border: none;
+            border-radius: 50px;
+            font-family: var(--font-body);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 16px var(--coral-glow);
+        }
+        .btn-admin-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--coral-glow);
+        }
+    </style>
+</head>
+<body>
+<div class="admin-login-wrap">
+    <div class="admin-login-card">
+        <div class="admin-login-logo">
+            <div class="brand-icon">💍</div>
+            <div class="admin-badge">🔐 Admin Access</div>
+            <h1>Nikkah Connect</h1>
+            <p>Admin Panel — Authorized Personnel Only</p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}"
+                     style="margin-bottom: 16px;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username"
+                       placeholder="Admin username" required/>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password"
+                       placeholder="Admin password" required/>
+            </div>
+            <button type="submit" class="btn-admin-login">
+                🔐 Login to Admin Panel
+            </button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

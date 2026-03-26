@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Partner Preferences — Nikkah Connect</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/preferences.css' %}">
+</head>
+<body>
+<div class="dashboard-wrapper">
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a class="navbar-brand" href="{% url 'dashboard' %}">
+            <span class="brand-icon">💍</span>
+            <span class="brand-name">Nikkah<em>Connect</em></span>
+        </a>
+        <div class="navbar-right">
+     <a href="{% url 'notifications' %}" class="nav-action-link notif-nav-link">
+        🔔 Alerts
+        {% with unread=request.user.notifications.all %}
+            {% if unread %}
+                <span class="notif-badge">{{ unread|length }}</span>
+            {% endif %}
+        {% endwith %}
+    </a>
+    <a href="{% url 'pricing' %}" class="nav-action-link">
+    💛 Gold
+</a>
+            <div class="navbar-user">
+                <div class="navbar-avatar">
+                    {{ request.user.first_name|first|upper }}
+                </div>
+                <span>{{ request.user.first_name }}</span>
+            </div>
+            <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="pref-content">
+
+        <!-- Page Header -->
+        <div class="pref-page-header">
+            <div>
+                <a href="{% url 'dashboard' %}" class="back-link">
+                    ← Back to Dashboard
+                </a>
+                <h1>Partner Preferences</h1>
+                <p>
+                    {% if created %}
+                        Tell us what you are looking for in a partner
+                    {% else %}
+                        Update your partner preferences anytime
+                    {% endif %}
+                </p>
+            </div>
+            <div class="pref-header-badge">
+                💫 Step 4
+            </div>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Form -->
+        <form method="POST" novalidate>
+            {% csrf_token %}
+
+            <div class="pref-grid">
+
+                <!-- ── CARD 1: Age Range ── -->
+                <div class="pref-card">
+                    <div class="pref-card-header">
+                        <span class="pref-card-icon">🎂</span>
+                        <div>
+                            <h3>Age Range</h3>
+                            <p>Set the preferred age range for your partner</p>
+                        </div>
+                    </div>
+                    <div class="pref-card-body">
+                        <div class="age-range-wrap">
+                            <div class="age-field">
+                                <label>Minimum Age</label>
+                                <input type="number"
+                                       name="min_age"
+                                       value="{{ form.min_age.value|default:18 }}"
+                                       min="18" max="80"
+                                       class="age-input"/>
+                                {% if form.min_age.errors %}
+                                    <span class="error-text">
+                                        {{ form.min_age.errors.0 }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                            <div class="age-separator">to</div>
+                            <div class="age-field">
+                                <label>Maximum Age</label>
+                                <input type="number"
+                                       name="max_age"
+                                       value="{{ form.max_age.value|default:40 }}"
+                                       min="18" max="80"
+                                       class="age-input"/>
+                                {% if form.max_age.errors %}
+                                    <span class="error-text">
+                                        {{ form.max_age.errors.0 }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- Age Range Slider Display -->
+                        <div class="age-range-display">
+                            <span id="ageRangeText">
+                                {{ form.min_age.value|default:18 }} –
+                                {{ form.max_age.value|default:40 }} years old
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── CARD 2: Location & Background ── -->
+                <div class="pref-card">
+                    <div class="pref-card-header">
+                        <span class="pref-card-icon">🌍</span>
+                        <div>
+                            <h3>Location & Background</h3>
+                            <p>Where should your partner be from?</p>
+                        </div>
+                    </div>
+                    <div class="pref-card-body">
+                        <div class="fields-row">
+                            <div class="pref-form-group">
+                                <label>Preferred Country</label>
+                                <input type="text"
+                                       name="preferred_country"
+                                       placeholder="e.g. Pakistan, UK, Any"
+                                       value="{{ form.preferred_country.value|default:'' }}"/>
+                            </div>
+                            <div class="pref-form-group">
+                                <label>Preferred Ethnicity</label>
+                                <input type="text"
+                                       name="preferred_ethnicity"
+                                       placeholder="e.g. South Asian, Any"
+                                       value="{{ form.preferred_ethnicity.value|default:'' }}"/>
+                            </div>
+                            <div class="pref-form-group">
+                                <label>Preferred Caste / Sect</label>
+                                <input type="text"
+                                       name="preferred_caste_sect"
+                                       placeholder="e.g. Sunni, Any"
+                                       value="{{ form.preferred_caste_sect.value|default:'' }}"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── CARD 3: Marital Status ── -->
+                <div class="pref-card">
+                    <div class="pref-card-header">
+                        <span class="pref-card-icon">💍</span>
+                        <div>
+                            <h3>Marital Status</h3>
+                            <p>Preferred marital background of your partner</p>
+                        </div>
+                    </div>
+                    <div class="pref-card-body">
+                        <div class="option-cards">
+                            {% for val, label in form.fields.preferred_marital_status.choices %}
+                            <label class="option-card
+                                {% if form.preferred_marital_status.value == val %}selected{% endif %}">
+                                <input type="radio"
+                                       name="preferred_marital_status"
+                                       value="{{ val }}"
+                                       {% if form.preferred_marital_status.value == val %}checked{% endif %}/>
+                                <span class="option-label">{{ label }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── CARD 4: Education ── -->
+                <div class="pref-card">
+                    <div class="pref-card-header">
+                        <span class="pref-card-icon">🎓</span>
+                        <div>
+                            <h3>Education Level</h3>
+                            <p>Minimum preferred education of your partner</p>
+                        </div>
+                    </div>
+                    <div class="pref-card-body">
+                        <div class="option-cards">
+                            {% for val, label in form.fields.preferred_education.choices %}
+                            <label class="option-card
+                                {% if form.preferred_education.value == val %}selected{% endif %}">
+                                <input type="radio"
+                                       name="preferred_education"
+                                       value="{{ val }}"
+                                       {% if form.preferred_education.value == val %}checked{% endif %}/>
+                                <span class="option-label">{{ label }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── CARD 5: Religious Level ── -->
+                <div class="pref-card">
+                    <div class="pref-card-header">
+                        <span class="pref-card-icon">🕌</span>
+                        <div>
+                            <h3>Religious Practice</h3>
+                            <p>Preferred level of religious practice</p>
+                        </div>
+                    </div>
+                    <div class="pref-card-body">
+                        <div class="option-cards">
+                            {% for val, label in form.fields.preferred_faith_level.choices %}
+                            <label class="option-card
+                                {% if form.preferred_faith_level.value == val %}selected{% endif %}">
+                                <input type="radio"
+                                       name="preferred_faith_level"
+                                       value="{{ val }}"
+                                       {% if form.preferred_faith_level.value == val %}checked{% endif %}/>
+                                <span class="option-label">{{ label }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── CARD 6: Lifestyle ── -->
+                <div class="pref-card">
+                    <div class="pref-card-header">
+                        <span class="pref-card-icon">🌿</span>
+                        <div>
+                            <h3>Lifestyle Preferences</h3>
+                            <p>Smoking and drinking preferences</p>
+                        </div>
+                    </div>
+                    <div class="pref-card-body">
+                        <div class="lifestyle-section">
+                            <div class="lifestyle-label">🚬 Smoking</div>
+                            <div class="option-cards">
+                                {% for val, label in form.fields.preferred_smoking.choices %}
+                                <label class="option-card
+                                    {% if form.preferred_smoking.value == val %}selected{% endif %}">
+                                    <input type="radio"
+                                           name="preferred_smoking"
+                                           value="{{ val }}"
+                                           {% if form.preferred_smoking.value == val %}checked{% endif %}/>
+                                    <span class="option-label">{{ label }}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="lifestyle-section" style="margin-top:20px;">
+                            <div class="lifestyle-label">🍷 Drinking</div>
+                            <div class="option-cards">
+                                {% for val, label in form.fields.preferred_drinking.choices %}
+                                <label class="option-card
+                                    {% if form.preferred_drinking.value == val %}selected{% endif %}">
+                                    <input type="radio"
+                                           name="preferred_drinking"
+                                           value="{{ val }}"
+                                           {% if form.preferred_drinking.value == val %}checked{% endif %}/>
+                                    <span class="option-label">{{ label }}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Save Button -->
+            <div class="pref-save-bar">
+                <a href="{% url 'dashboard' %}" class="btn-pref-cancel">
+                    Cancel
+                </a>
+                <button type="submit" class="btn-pref-save">
+                    💾 Save Preferences
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script>
+// Update age range display text live
+const minAge = document.querySelector('input[name="min_age"]');
+const maxAge = document.querySelector('input[name="max_age"]');
+const ageText = document.getElementById('ageRangeText');
+
+function updateAgeText() {
+    if (ageText && minAge && maxAge) {
+        ageText.textContent =
+            minAge.value + ' – ' + maxAge.value + ' years old';
+    }
+}
+if (minAge) minAge.addEventListener('input', updateAgeText);
+if (maxAge) maxAge.addEventListener('input', updateAgeText);
+
+// Highlight selected option cards
+document.querySelectorAll('.option-card input').forEach(input => {
+    input.addEventListener('change', function () {
+        const group = this.closest('.option-cards');
+        group.querySelectorAll('.option-card')
+             .forEach(c => c.classList.remove('selected'));
+        this.closest('.option-card').classList.add('selected');
+    });
+});
+</script>
+
+</body>
+</html>

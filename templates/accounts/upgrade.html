@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Upgrade to Gold — Nikkah Connect</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/subscription.css' %}">
+</head>
+<body>
+<div class="dashboard-wrapper">
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a class="navbar-brand" href="{% url 'dashboard' %}">
+            <span class="brand-icon">💍</span>
+            <span class="brand-name">Nikkah<em>Connect</em></span>
+        </a>
+        <div class="navbar-right">
+            <a href="{% url 'browse_profiles' %}" class="nav-action-link">
+                🔍 Browse
+            </a>
+            <a href="{% url 'my_interests' %}" class="nav-action-link">
+                💌 Interests
+            </a>
+            <a href="{% url 'notifications' %}" class="nav-action-link notif-nav-link">
+                🔔 Alerts
+                {% with unread=request.user.notifications.all %}
+                    {% if unread %}
+                        <span class="notif-badge">{{ unread|length }}</span>
+                    {% endif %}
+                {% endwith %}
+            </a>
+            <div class="navbar-user">
+                <div class="navbar-avatar">
+                    {{ request.user.first_name|first|upper }}
+                </div>
+                <span>{{ request.user.first_name }}</span>
+            </div>
+            <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="upgrade-content">
+
+        <!-- Header -->
+        <div class="upgrade-header">
+            <a href="{% url 'pricing' %}" class="back-link">
+                ← Back to Pricing
+            </a>
+            <h1>Upgrade to Gold 💛</h1>
+            <p>Follow the steps below to complete your upgrade</p>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="upgrade-grid">
+
+            <!-- LEFT: Payment Instructions -->
+            <div class="upgrade-instructions">
+
+                <!-- Step 1: Choose Plan -->
+                <div class="instruction-card">
+                    <div class="instruction-step">Step 1</div>
+                    <h3>Choose Your Plan</h3>
+                    <div class="plan-options">
+                        <label class="plan-option" id="lbl_1_month">
+                            <input type="radio" name="plan_select"
+                                   value="1_month" checked/>
+                            <div class="plan-option-inner">
+                                <div class="plan-option-name">1 Month</div>
+                                <div class="plan-option-price">Rs. 1,000</div>
+                            </div>
+                        </label>
+                        <label class="plan-option" id="lbl_3_months">
+                            <input type="radio" name="plan_select"
+                                   value="3_months"/>
+                            <div class="plan-option-inner">
+                                <div class="plan-option-name">3 Months</div>
+                                <div class="plan-option-price">Rs. 2,500</div>
+                            </div>
+                        </label>
+                        <label class="plan-option" id="lbl_6_months">
+                            <input type="radio" name="plan_select"
+                                   value="6_months"/>
+                            <div class="plan-option-inner">
+                                <div class="plan-option-name">6 Months</div>
+                                <div class="plan-option-price">Rs. 5,000</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Step 2: Send Payment -->
+                <div class="instruction-card">
+                    <div class="instruction-step">Step 2</div>
+                    <h3>Send Payment</h3>
+                    <p>Send the exact amount to one of these accounts:</p>
+
+                    <div class="payment-accounts">
+
+                        <!-- JazzCash -->
+                        <div class="payment-account jazzcash-account"
+                             id="jazzcard">
+                            <div class="account-logo">
+                                <span class="account-logo-icon">🟠</span>
+                                <span class="account-logo-text">JazzCash</span>
+                            </div>
+                            <div class="account-number"
+                                 id="jazzNumber">{{ JAZZCASH_NUMBER }}</div>
+                            <button class="btn-copy"
+                                    onclick="copyNumber('{{ JAZZCASH_NUMBER }}', this)">
+                                📋 Copy
+                            </button>
+                        </div>
+
+                        <!-- Easypaisa -->
+                        <div class="payment-account easypaisa-account"
+                             id="easycard">
+                            <div class="account-logo">
+                                <span class="account-logo-icon">🟢</span>
+                                <span class="account-logo-text">Easypaisa</span>
+                            </div>
+                            <div class="account-number"
+                                 id="easyNumber">{{ EASYPAISA_NUMBER }}</div>
+                            <button class="btn-copy"
+                                    onclick="copyNumber('{{ EASYPAISA_NUMBER }}', this)">
+                                📋 Copy
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <div class="amount-reminder">
+                        💡 Send exactly:
+                        <strong id="reminderAmount">Rs. 1,000</strong>
+                    </div>
+                </div>
+
+                <!-- Step 3: Note -->
+                <div class="instruction-card info-card">
+                    <div class="instruction-step">Step 3</div>
+                    <h3>Get Your Transaction ID</h3>
+                    <p>After sending payment, JazzCash or Easypaisa will
+                    send you an <strong>SMS confirmation</strong> with a
+                    <strong>Transaction ID</strong> that looks like:</p>
+                    <div class="txn-example">
+                        TXN123456789
+                    </div>
+                    <p>Copy that Transaction ID and enter it in the
+                    form on the right.</p>
+                </div>
+
+            </div>
+
+            <!-- RIGHT: Submission Form -->
+            <div class="upgrade-form-wrap">
+                <div class="upgrade-form-card">
+                    <h3>Submit Payment Details</h3>
+                    <p>Fill in the form after completing your payment</p>
+
+                    <form method="POST" action="{% url 'upgrade' %}">
+                        {% csrf_token %}
+
+                        <!-- Hidden plan field — synced with left side -->
+                        <input type="hidden" name="plan"
+                               id="selectedPlan" value="1_month"/>
+
+                        <!-- Payment Method -->
+                        <div class="form-group">
+                            <label>Payment Method</label>
+                            <div class="method-options">
+                                <label class="method-option">
+                                    <input type="radio"
+                                           name="payment_method"
+                                           value="jazzcash" checked/>
+                                    <span class="method-label">
+                                        🟠 JazzCash
+                                    </span>
+                                </label>
+                                <label class="method-option">
+                                    <input type="radio"
+                                           name="payment_method"
+                                           value="easypaisa"/>
+                                    <span class="method-label">
+                                        🟢 Easypaisa
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Transaction ID -->
+                        <div class="form-group">
+                            <label>Transaction ID</label>
+                            <input type="text"
+                                   name="transaction_id"
+                                   placeholder="e.g. TXN123456789"
+                                   required/>
+                            <span class="form-hint">
+                                Get this from your JazzCash/Easypaisa SMS
+                            </span>
+                        </div>
+
+                        <!-- Summary -->
+                        <div class="payment-summary">
+                            <div class="summary-row">
+                                <span>Plan</span>
+                                <span id="summaryPlan">1 Month Gold</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Amount</span>
+                                <span id="summaryAmount">Rs. 1,000</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit-payment">
+                            💛 Submit Payment Request
+                        </button>
+
+                        <p class="form-note">
+                            ⏳ Your Gold plan will be activated within
+                            a few hours after admin verifies your payment.
+                        </p>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    const planData = {
+        '1_month':  { name: '1 Month Gold',  price: 'Rs. 1,000', amount: '1,000' },
+        '3_months': { name: '3 Months Gold', price: 'Rs. 2,500', amount: '2,500' },
+        '6_months': { name: '6 Months Gold', price: 'Rs. 5,000', amount: '5,000' },
+    };
+
+    const planRadios = document.querySelectorAll('input[name="plan_select"]');
+    const selectedPlan    = document.getElementById('selectedPlan');
+    const reminderAmount  = document.getElementById('reminderAmount');
+    const summaryPlan     = document.getElementById('summaryPlan');
+    const summaryAmount   = document.getElementById('summaryAmount');
+
+    planRadios.forEach(radio => {
+        radio.addEventListener('change', function () {
+            const data = planData[this.value];
+            selectedPlan.value      = this.value;
+            reminderAmount.textContent = data.price;
+            summaryPlan.textContent    = data.name;
+            summaryAmount.textContent  = data.price;
+
+            // Highlight selected plan
+            document.querySelectorAll('.plan-option').forEach(
+                el => el.classList.remove('selected'));
+            this.closest('.plan-option').classList.add('selected');
+        });
+    });
+
+    // Set initial selected state
+    document.querySelector('.plan-option').classList.add('selected');
+
+    // Copy number to clipboard
+    function copyNumber(number, btn) {
+        navigator.clipboard.writeText(number).then(() => {
+            const orig = btn.textContent;
+            btn.textContent = '✅ Copied!';
+            setTimeout(() => btn.textContent = orig, 2000);
+        });
+    }
+</script>
+
+</body>
+</html>

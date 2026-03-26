@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Login — Nikkah Connect</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<div class="auth-wrapper">
+
+    <!-- LEFT -->
+    <div class="auth-left">
+        <div class="auth-brand">
+            <span class="logo-icon">💍</span>
+            <h1>Nikkah<em>Connect</em></h1>
+            <p>Welcome back. Your perfect match is waiting for you.</p>
+        </div>
+        <div class="auth-features">
+            <div class="auth-feature-item">
+                <div class="feat-icon">✅</div>
+                <span>Verified profiles with identity checks</span>
+            </div>
+            <div class="auth-feature-item">
+                <div class="feat-icon">🔒</div>
+                <span>Photo privacy — you control who sees you</span>
+            </div>
+            <div class="auth-feature-item">
+                <div class="feat-icon">💬</div>
+                <span>Chat only after a mutual match</span>
+            </div>
+            <div class="auth-feature-item">
+                <div class="feat-icon">👨‍👩‍👧</div>
+                <span>Guardian / Wali mode for family involvement</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="auth-right">
+        <div class="auth-box">
+
+            <h2>Welcome Back 👋</h2>
+            <p class="subtitle">Sign in to continue your journey</p>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" novalidate>
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="id_username">Email Address</label>
+                    <input type="email" name="username" id="id_username"
+                           placeholder="you@example.com"
+                           value="{{ form.username.value|default:'' }}"
+                           required autofocus/>
+                    {% if form.username.errors %}
+                        <span class="error-text">{{ form.username.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_password">Password</label>
+                    <input type="password" name="password" id="id_password"
+                           placeholder="Enter your password" required/>
+                    {% if form.password.errors %}
+                        <span class="error-text">{{ form.password.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Forgot Password Link -->
+                <div class="forgot-link">
+                    <a href="{% url 'forgot_password' %}">Forgot Password?</a>
+                </div>
+
+                <button type="submit" class="btn-primary">Sign In</button>
+            </form>
+
+            <div class="form-divider">or</div>
+
+            <p class="auth-link">
+                Don't have an account? <a href="{% url 'register' %}">Create one free</a>
+            </p>
+
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

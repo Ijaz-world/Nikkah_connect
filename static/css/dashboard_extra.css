@@ -1,0 +1,99 @@
+/* ── QUICK ACTIONS ROW ── */
+.quick-actions-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 28px;
+}
+.quick-action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px 16px;
+    background: var(--white);
+    border: 1.5px solid var(--sand-deep);
+    border-radius: 16px;
+    text-decoration: none;
+    transition: all 0.25s;
+    text-align: center;
+}
+.quick-action-btn:hover {
+    border-color: var(--coral-border);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+}
+.quick-action-btn.primary {
+    background: linear-gradient(135deg, var(--coral) 0%, var(--coral-deep) 100%);
+    border-color: var(--coral);
+    box-shadow: 0 4px 16px var(--coral-glow);
+}
+.quick-action-btn.primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px var(--coral-glow);
+}
+.quick-action-btn.primary .qa-icon,
+.quick-action-btn.primary .qa-label {
+    color: var(--white);
+}
+.qa-icon  { font-size: 24px; }
+.qa-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-mid);
+}
+
+/* ── ACTION CARDS ── */
+.action-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 22px;
+    margin-bottom: 0;
+}
+.action-card-icon {
+    font-size: 36px;
+    flex-shrink: 0;
+}
+.action-card-body { flex: 1; }
+.action-card-body h3 {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+}
+.action-card-body p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+.btn-action-card {
+    display: inline-block;
+    padding: 8px 20px;
+    background: linear-gradient(135deg, var(--coral) 0%, var(--coral-deep) 100%);
+    color: var(--white);
+    text-decoration: none;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.25s;
+    box-shadow: 0 3px 10px var(--coral-glow);
+}
+.btn-action-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px var(--coral-glow);
+}
+.action-verify { border-left: 4px solid var(--coral); }
+.action-prefs  { border-left: 4px solid #3498db; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+    .quick-actions-row { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+    .quick-actions-row { grid-template-columns: repeat(2, 1fr); }
+    .action-card { flex-direction: column; text-align: center; }
+}

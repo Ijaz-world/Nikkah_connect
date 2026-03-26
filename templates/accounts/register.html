@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Register — Nikkah Connect</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<div class="auth-wrapper">
+
+    <!-- LEFT -->
+    <div class="auth-left">
+        <div class="auth-brand">
+            <span class="logo-icon">💍</span>
+            <h1>Nikkah<em>Connect</em></h1>
+            <p>Find your perfect life partner in a halal, safe and trusted environment.</p>
+        </div>
+        <div class="auth-features">
+            <div class="auth-feature-item">
+                <div class="feat-icon">✅</div>
+                <span>Verified profiles with identity checks</span>
+            </div>
+            <div class="auth-feature-item">
+                <div class="feat-icon">🔒</div>
+                <span>Photo privacy — you control who sees you</span>
+            </div>
+            <div class="auth-feature-item">
+                <div class="feat-icon">💬</div>
+                <span>Chat only after a mutual match</span>
+            </div>
+            <div class="auth-feature-item">
+                <div class="feat-icon">👨‍👩‍👧</div>
+                <span>Guardian / Wali mode for family involvement</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="auth-right">
+        <div class="auth-box">
+
+            <h2>Create Account</h2>
+            <p class="subtitle">Start your journey to finding the right match 🌙</p>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" novalidate>
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="id_full_name">Full Name</label>
+                    <input type="text" name="full_name" id="id_full_name"
+                           placeholder="e.g. Ahmed Khan"
+                           value="{{ form.full_name.value|default:'' }}" required/>
+                    {% if form.full_name.errors %}
+                        <span class="error-text">{{ form.full_name.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_email">Email Address</label>
+                    <input type="email" name="email" id="id_email"
+                           placeholder="you@example.com"
+                           value="{{ form.email.value|default:'' }}" required/>
+                    {% if form.email.errors %}
+                        <span class="error-text">{{ form.email.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_phone_number">Phone Number <span style="font-weight:400; text-transform:none; color:#bbb;">(optional)</span></label>
+                    <input type="text" name="phone_number" id="id_phone_number"
+                           placeholder="+92 300 0000000"
+                           value="{{ form.phone_number.value|default:'' }}"/>
+                    {% if form.phone_number.errors %}
+                        <span class="error-text">{{ form.phone_number.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_password1">Password</label>
+                    <input type="password" name="password1" id="id_password1"
+                           placeholder="Create a strong password" required/>
+                    {% if form.password1.errors %}
+                        <span class="error-text">{{ form.password1.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_password2">Confirm Password</label>
+                    <input type="password" name="password2" id="id_password2"
+                           placeholder="Repeat your password" required/>
+                    {% if form.password2.errors %}
+                        <span class="error-text">{{ form.password2.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn-primary">Create My Account</button>
+            </form>
+
+            <div class="form-divider">or</div>
+
+            <p class="auth-link">
+                Already have an account? <a href="{% url 'login' %}">Sign In</a>
+            </p>
+
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

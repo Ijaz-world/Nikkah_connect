@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>My Profile — Nikkah Connect</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body>
+<div class="dashboard-wrapper">
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a class="navbar-brand" href="{% url 'dashboard' %}">
+            <span class="brand-icon">💍</span>
+            <span class="brand-name">Nikkah<em>Connect</em></span>
+        </a>
+        <div class="navbar-right">
+      <a href="{% url 'notifications' %}" class="nav-action-link notif-nav-link">
+        🔔 Alerts
+        {% with unread=request.user.notifications.all %}
+            {% if unread %}
+                <span class="notif-badge">{{ unread|length }}</span>
+            {% endif %}
+        {% endwith %}
+    </a>
+            <div class="navbar-user">
+                <div class="navbar-avatar">
+                    {{ request.user.first_name|first|upper }}
+                </div>
+                <span>{{ request.user.first_name }} {{ request.user.last_name }}</span>
+            </div>
+            <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="dashboard-content">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <a href="{% url 'dashboard' %}" class="back-link">← Back to Dashboard</a>
+                <h1>My Full Profile</h1>
+                <p>Everything you've shared so far</p>
+            </div>
+            <a href="{% url 'profile_create_step' step=1 %}" class="btn-edit-profile-lg">
+                ✏️ Edit Profile
+            </a>
+        </div>
+
+        <div class="profile-detail-grid">
+
+            <!-- LEFT: Photo & Identity -->
+            <div class="profile-left-col">
+
+                <div class="dash-card identity-card">
+                    <!-- Photo -->
+                    <div class="detail-photo-wrap">
+                        {% if profile.profile_photo %}
+                            <img src="{{ profile.profile_photo.url }}"
+                                 class="detail-photo" alt="Profile Photo"/>
+                        {% else %}
+                            <div class="detail-photo-placeholder">
+                                {{ request.user.first_name|first|upper }}
+                            </div>
+                        {% endif %}
+                        <div class="photo-completion">
+                            <div class="photo-comp-bar">
+                                <div style="width:{{ profile.completion_percentage }}%"></div>
+                            </div>
+                            <span>{{ profile.completion_percentage }}% Complete</span>
+                        </div>
+                    </div>
+
+                    <!-- Name -->
+                    <h2 class="detail-name">
+    {{ request.user.first_name }} {{ request.user.last_name }}
+    {% if profile.verified_badge %}
+        <span class="verified-badge-icon" title="Verified">✅</span>
+    {% endif %}
+</h2>
+                    <p class="detail-email">{{ request.user.email }}</p>
+                    {% if request.user.phone_number %}
+                        <p class="detail-phone">📞 {{ request.user.phone_number }}</p>
+                    {% endif %}
+
+                    <!-- Pills -->
+                    <div class="summary-pills" style="justify-content:center; margin-top:16px;">
+                        {% if profile.gender %}
+                            <span class="info-pill">{{ profile.get_gender_display }}</span>
+                        {% endif %}
+                        {% if profile.marital_status %}
+                            <span class="info-pill">{{ profile.get_marital_status_display }}</span>
+                        {% endif %}
+                        {% if profile.nationality %}
+                            <span class="info-pill">🌍 {{ profile.nationality }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Verification Status -->
+<div class="verification-status-wrap" style="margin-top: 16px;">
+    {% if profile.verified_badge %}
+        <div class="vstatus verified">✅ Verified Profile</div>
+    {% elif profile.verification_status == 'pending' %}
+        <div class="vstatus pending">⏳ Verification Pending</div>
+    {% else %}
+        <div class="vstatus unverified">
+            ⚠️ Not Verified —
+            <a href="{% url 'verify_profile' %}">Verify Now</a>
+        </div>
+    {% endif %}
+</div>
+            <!-- RIGHT: All Sections -->
+            <div class="profile-right-col">
+
+                <!-- Basic Information -->
+                <div class="dash-card section-card">
+                    <div class="section-card-header">
+                        <span class="section-icon">👤</span>
+                        <h3>Basic Information</h3>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Date of Birth</span>
+                            <span class="info-value">{{ profile.date_of_birth|default:"Not provided" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Gender</span>
+                            <span class="info-value">{{ profile.get_gender_display|default:"Not provided" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Height</span>
+                            <span class="info-value">{{ profile.height|default:"Not provided" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Nationality</span>
+                            <span class="info-value">{{ profile.nationality|default:"Not provided" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Caste / Sect</span>
+                            <span class="info-value">{{ profile.caste_sect|default:"Not provided" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Marital Status</span>
+                            <span class="info-value">{{ profile.get_marital_status_display|default:"Not provided" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Has Children</span>
+                            <span class="info-value">{{ profile.get_has_children_display|default:"Not provided" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Purpose & Discovery -->
+                <div class="dash-card section-card">
+                    <div class="section-card-header">
+                        <span class="section-icon">🎯</span>
+                        <h3>Purpose & Discovery</h3>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Here For</span>
+                            <span class="info-value">{{ profile.get_purpose_display|default:"Not provided" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Heard About Us From</span>
+                            <span class="info-value">{{ profile.get_heard_from_display|default:"Not provided" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Education & Profession -->
+                <div class="dash-card section-card">
+                    <div class="section-card-header">
+                        <span class="section-icon">🎓</span>
+                        <h3>Education & Profession</h3>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Education Level</span>
+                            <span class="info-value">{{ profile.get_education_display|default:"Not provided" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Profession</span>
+                            <span class="info-value">{{ profile.profession|default:"Not provided" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Religious Information -->
+                <div class="dash-card section-card">
+                    <div class="section-card-header">
+                        <span class="section-icon">🕌</span>
+                        <h3>Religious Information</h3>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Faith Level</span>
+                            <span class="info-value">{{ profile.get_faith_level_display|default:"Not provided" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Born Muslim</span>
+                            <span class="info-value">{{ profile.get_born_muslim_display|default:"Not provided" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Halal Food</span>
+                            <span class="info-value">{{ profile.get_halal_food_display|default:"Not provided" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lifestyle -->
+                <div class="dash-card section-card">
+                    <div class="section-card-header">
+                        <span class="section-icon">🌿</span>
+                        <h3>Lifestyle</h3>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Dressing Style</span>
+                            <span class="info-value">{{ profile.get_dress_style_display|default:"Not provided" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Smoking</span>
+                            <span class="info-value">{{ profile.get_smoking_display|default:"Not provided" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Drinking</span>
+                            <span class="info-value">{{ profile.get_drinking_display|default:"Not provided" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location & Background -->
+                <div class="dash-card section-card">
+                    <div class="section-card-header">
+                        <span class="section-icon">📍</span>
+                        <h3>Location & Background</h3>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Country</span>
+                            <span class="info-value">{{ profile.country|default:"Not provided" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">City</span>
+                            <span class="info-value">{{ profile.city|default:"Not provided" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Grew Up In</span>
+                            <span class="info-value">{{ profile.grew_up_in|default:"Not provided" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Open to Marriage Abroad</span>
+                            <span class="info-value">{{ profile.get_open_to_abroad_display|default:"Not provided" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About Me -->
+                <div class="dash-card section-card">
+                    <div class="section-card-header">
+                        <span class="section-icon">📝</span>
+                        <h3>About Me</h3>
+                    </div>
+                    <div class="about-me-text">
+                        {{ profile.about_me|default:"No bio added yet." }}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

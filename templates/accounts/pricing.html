@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Pricing — Nikkah Connect</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/subscription.css' %}">
+</head>
+<body>
+<div class="dashboard-wrapper">
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a class="navbar-brand" href="{% url 'dashboard' %}">
+            <span class="brand-icon">💍</span>
+            <span class="brand-name">Nikkah<em>Connect</em></span>
+        </a>
+        <div class="navbar-right">
+            <a href="{% url 'browse_profiles' %}" class="nav-action-link">
+                🔍 Browse
+            </a>
+            <a href="{% url 'my_interests' %}" class="nav-action-link">
+                💌 Interests
+            </a>
+            <a href="{% url 'notifications' %}" class="nav-action-link notif-nav-link">
+                🔔 Alerts
+                {% with unread=request.user.notifications.all %}
+                    {% if unread %}
+                        <span class="notif-badge">{{ unread|length }}</span>
+                    {% endif %}
+                {% endwith %}
+            </a>
+            <div class="navbar-user">
+                <div class="navbar-avatar">
+                    {{ request.user.first_name|first|upper }}
+                </div>
+                <span>{{ request.user.first_name }}</span>
+            </div>
+            <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="pricing-content">
+
+        <!-- Header -->
+        <div class="pricing-header">
+            <a href="{% url 'dashboard' %}" class="back-link">
+                ← Back to Dashboard
+            </a>
+            <h1>Choose Your Plan</h1>
+            <p>Upgrade to Gold and unlock all premium features</p>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Gold Status Banner -->
+        {% if is_gold %}
+        <div class="gold-active-banner">
+            <span>💛</span>
+            <div>
+                <strong>You are a Gold Member!</strong>
+                <p>Your subscription is active.
+                    <a href="{% url 'my_subscription' %}">View details →</a>
+                </p>
+            </div>
+        </div>
+        {% elif pending_sub %}
+        <div class="pending-banner">
+            <span>⏳</span>
+            <div>
+                <strong>Payment Pending Verification</strong>
+                <p>Your payment is being reviewed by our team.
+                Gold will activate shortly after approval.</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Plans Grid -->
+        <div class="plans-grid">
+
+            <!-- Free Plan -->
+            <div class="plan-card free-plan">
+                <div class="plan-badge">Current Plan</div>
+                <div class="plan-icon">🆓</div>
+                <h2>Free</h2>
+                <div class="plan-price">
+                    <span class="price-amount">Rs. 0</span>
+                    <span class="price-period">forever</span>
+                </div>
+                <ul class="plan-features">
+                    <li class="feat-yes">✅ Create Profile</li>
+                    <li class="feat-yes">✅ Browse Profiles</li>
+                    <li class="feat-yes">✅ Send Interests</li>
+                    <li class="feat-yes">✅ Chat with Matches</li>
+                    <li class="feat-no">❌ Photo Sharing in Chat</li>
+                    <li class="feat-no">❌ Priority in Search</li>
+                    <li class="feat-no">❌ Gold Badge</li>
+                </ul>
+                <button class="btn-current-plan" disabled>
+                    Current Plan
+                </button>
+            </div>
+
+            <!-- Gold Plan -->
+            <div class="plan-card gold-plan">
+                <div class="plan-badge gold">⭐ Most Popular</div>
+                <div class="plan-icon">💛</div>
+                <h2>Gold</h2>
+
+                <!-- Plan Duration Tabs -->
+                <div class="duration-tabs">
+                    <button class="dur-tab active" data-plan="1_month"
+                            data-price="1,000" data-period="month">
+                        1 Month
+                    </button>
+                    <button class="dur-tab" data-plan="3_months"
+                            data-price="2,500" data-period="3 months">
+                        3 Months
+                    </button>
+                    <button class="dur-tab" data-plan="6_months"
+                            data-price="5,000" data-period="6 months">
+                        6 Months
+                    </button>
+                </div>
+
+                <div class="plan-price">
+                    <span class="price-amount" id="goldPrice">Rs. 1,000</span>
+                    <span class="price-period" id="goldPeriod">/ month</span>
+                </div>
+
+                <ul class="plan-features">
+                    <li class="feat-yes">✅ Everything in Free</li>
+                    <li class="feat-yes">✅ Photo Sharing in Chat</li>
+                    <li class="feat-yes">✅ Priority in Search</li>
+                    <li class="feat-yes">✅ 💛 Gold Badge on Profile</li>
+                </ul>
+
+                {% if is_gold %}
+                    <button class="btn-gold-active" disabled>
+                        💛 Already Gold
+                    </button>
+                {% elif pending_sub %}
+                    <button class="btn-gold-pending" disabled>
+                        ⏳ Pending Approval
+                    </button>
+                {% else %}
+                    <a href="{% url 'upgrade' %}" class="btn-upgrade-now"
+                       id="upgradeBtn">
+                        Upgrade Now →
+                    </a>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <!-- How It Works -->
+        <div class="how-it-works">
+            <h3>💡 How to Upgrade</h3>
+            <div class="steps-row">
+                <div class="how-step">
+                    <div class="how-step-num">1</div>
+                    <div class="how-step-text">
+                        Choose your plan and click Upgrade Now
+                    </div>
+                </div>
+                <div class="how-arrow">→</div>
+                <div class="how-step">
+                    <div class="how-step-num">2</div>
+                    <div class="how-step-text">
+                        Send payment via JazzCash or Easypaisa
+                    </div>
+                </div>
+                <div class="how-arrow">→</div>
+                <div class="how-step">
+                    <div class="how-step-num">3</div>
+                    <div class="how-step-text">
+                        Enter your Transaction ID and submit
+                    </div>
+                </div>
+                <div class="how-arrow">→</div>
+                <div class="how-step">
+                    <div class="how-step-num">4</div>
+                    <div class="how-step-text">
+                        Gold activates after admin verification
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Duration tab switching
+    const tabs = document.querySelectorAll('.dur-tab');
+    const goldPrice  = document.getElementById('goldPrice');
+    const goldPeriod = document.getElementById('goldPeriod');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function () {
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            goldPrice.textContent  = 'Rs. ' + this.dataset.price;
+            goldPeriod.textContent = '/ ' + this.dataset.period;
+        });
+    });
+</script>
+
+</body>
+</html>
